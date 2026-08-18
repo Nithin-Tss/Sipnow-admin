@@ -1,0 +1,45 @@
+{
+  "name": "sipnow_admin",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run lint && vite build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "npx prettier --list-different . || npx prettier --write . --log-level silent",
+    "preview": "vite preview",
+    "test": "node --no-experimental-webstorage ./node_modules/vitest/vitest.mjs run",
+    "test:watch": "node --no-experimental-webstorage ./node_modules/vitest/vitest.mjs",
+    "test:coverage": "node --no-experimental-webstorage ./node_modules/vitest/vitest.mjs run --coverage"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.4",
+    "@tanstack/react-query": "^5.100.5",
+    "country-state-city": "^3.2.1",
+    "lucide-react": "^1.9.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.2",
+    "tailwindcss": "^4.2.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@eslint/js": "^10.0.1",
+    "@rolldown/plugin-babel": "^0.2.3",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/coverage-v8": "^4.1.5",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "eslint": "^10.2.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.5.0",
+    "jsdom": "^29.1.1",
+    "vite": "^8.0.10",
+    "vitest": "^4.1.5"
+  }
+}
