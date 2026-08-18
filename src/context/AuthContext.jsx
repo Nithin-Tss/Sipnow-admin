@@ -14,10 +14,13 @@ export function AuthProvider({ children }) {
       login: async (email, password) => {
         setLoading(true);
         try {
-          const { token, user: loggedInUser } = await apiFetch("/api/auth/login", {
-            method: "POST",
-            body: JSON.stringify({ email, password }),
-          });
+          const { token, user: loggedInUser } = await apiFetch(
+            "/api/auth/login",
+            {
+              method: "POST",
+              body: JSON.stringify({ email, password }),
+            },
+          );
           saveToken(token);
           setUser(loggedInUser);
           return loggedInUser;
