@@ -1,50 +1,18 @@
-import { createContext, useContext, useState, useEffect, useMemo } from "react";
-import { api, saveToken, clearToken, getToken } from "../lib/api";
+import { createContext, useContext, useMemo } from "react";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const token = getToken();
-    Promise.resolve(token ? api.get("/auth/me") : null)
-      .then((u) => {
-        if (
-          u &&
-          (u.role === "admin" || u.role === "store_owner" || u.role === "root")
-        )
-          setUser(u);
-        else if (token) clearToken();
-      })
-      .catch(() => clearToken())
-      .finally(() => setLoading(false));
-  }, []);
-
-  async function login(email, password) {
-    const data = await api.post("/auth/login", { email, password });
-    if (
-      data.user.role !== "admin" &&
-      data.user.role !== "store_owner" &&
-      data.user.role !== "root"
-    ) {
-      throw new Error(
-        "Access restricted to admin, store owner, and root accounts",
-      );
-    }
-    saveToken(data.token);
-    setUser(data.user);
-  }
-
-  function logout() {
-    clearToken();
-    setUser(null);
-  }
-
   const ctxValue = useMemo(
-    () => ({ user, loading, login, logout }),
-    [user, loading],
+    () => ({
+      user: null,
+      loading: false,
+      login: async () => {
+        throw new Error("Not connected to a backend");
+      },
+      logout: () => {},
+    }),
+    [],
   );
 
   return (

@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -22,7 +21,6 @@ import {
   Percent,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { BASE } from "../lib/api";
 
 const NAV = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -44,13 +42,6 @@ const NAV = [
 
 export default function Sidebar({ collapsed, onToggle }) {
   const { user, logout } = useAuth();
-  const [backendStatus, setBackendStatus] = useState("checking");
-
-  useEffect(() => {
-    fetch(`${BASE}/api/health`)
-      .then((res) => setBackendStatus(res.ok ? "connected" : "offline"))
-      .catch(() => setBackendStatus("offline"));
-  }, []);
 
   return (
     <aside
@@ -100,25 +91,6 @@ export default function Sidebar({ collapsed, onToggle }) {
 
       {/* User + collapse toggle */}
       <div className="border-t border-gray-200">
-        <div
-          className={`flex items-center gap-2 px-4 py-2 text-[10px] ${collapsed ? "justify-center" : ""}`}
-          title={`Backend: ${backendStatus}`}
-        >
-          <span
-            className={`w-2 h-2 shrink-0 ${
-              backendStatus === "connected"
-                ? "bg-green-500"
-                : backendStatus === "offline"
-                  ? "bg-red-500"
-                  : "bg-gray-400"
-            }`}
-          />
-          {!collapsed && (
-            <span className="text-gray-400 capitalize">
-              Backend: {backendStatus}
-            </span>
-          )}
-        </div>
         {!collapsed && user && (
           <div className="px-4 py-3">
             <p className="text-xs font-semibold text-gray-900 truncate">
