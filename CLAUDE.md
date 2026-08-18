@@ -88,7 +88,6 @@ CSV logic is centralised in `src/lib/csv.js`. Key behaviours:
 - Coverage target: ≥ 80% on new code
 - Test helpers in `src/test/helpers.jsx` (custom render with providers)
 - `src/test/setup.js` — global test setup (jest-dom matchers)
-- CI quality gate via SonarQube
 
 ## Environment
 
