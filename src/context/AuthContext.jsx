@@ -1,18 +1,36 @@
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
+import { apiFetch, saveToken, clearToken } from "../lib/api";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+
   const ctxValue = useMemo(
     () => ({
-      user: null,
-      loading: false,
-      login: async () => {
-        throw new Error("Not connected to a backend");
+      user,
+      loading,
+      login: async (email, password) => {
+        setLoading(true);
+        try {
+          const { token, user: loggedInUser } = await apiFetch("/api/auth/login", {
+            method: "POST",
+            body: JSON.stringify({ email, password }),
+          });
+          saveToken(token);
+          setUser(loggedInUser);
+          return loggedInUser;
+        } finally {
+          setLoading(false);
+        }
       },
-      logout: () => {},
+      logout: () => {
+        clearToken();
+        setUser(null);
+      },
     }),
-    [],
+    [user, loading],
   );
 
   return (
