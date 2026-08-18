@@ -17,8 +17,7 @@ export default function Account() {
   const [pwOk, setPwOk] = useState(false);
 
   const passwordMutation = useMutation({
-    mutationFn: (body) =>
-      api.patch("/auth/password", body),
+    mutationFn: (body) => api.patch("/auth/password", body),
     onSuccess: () => {
       setPwForm({ currentPassword: "", newPassword: "", confirm: "" });
       setPwErr("");

@@ -74,20 +74,17 @@ export default function Stock() {
   });
 
   const saveStockMutation = useMutation({
-    mutationFn: ({ id, stock }) =>
-      api.put(`/products/${id}`, { stock }),
+    mutationFn: ({ id, stock }) => api.put(`/products/${id}`, { stock }),
     onSuccess: (_, { id, stock }) => {
-      queryClient.setQueryData(
-        ["stock-products", page, search],
-        (prev) =>
-          prev
-            ? {
-                ...prev,
-                products: prev.products.map((p) =>
-                  p.id === id ? { ...p, stock } : p,
-                ),
-              }
-            : prev,
+      queryClient.setQueryData(["stock-products", page, search], (prev) =>
+        prev
+          ? {
+              ...prev,
+              products: prev.products.map((p) =>
+                p.id === id ? { ...p, stock } : p,
+              ),
+            }
+          : prev,
       );
       setEditingId(null);
     },

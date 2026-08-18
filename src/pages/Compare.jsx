@@ -76,8 +76,7 @@ function EditLinkModal({ row, competitor, onClose, onSaved }) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: () =>
-      api.put(`/competitors/links/${existing.linkId}`, { url }),
+    mutationFn: () => api.put(`/competitors/links/${existing.linkId}`, { url }),
     onSuccess: () => {
       onSaved();
       onClose();
@@ -676,32 +675,30 @@ export default function Compare() {
 
         {/* Filter chips */}
         <div className="flex items-center gap-1.5">
-          {["all", "cheaper", "expensive", "unmatched"].map(
-            (f) => {
-              const labels = {
-                all: `All (${filteredRows.length})`,
-                cheaper: `We're cheaper (${cheaperCount})`,
-                expensive: `They're cheaper (${expensiveCount})`,
-                unmatched: "No price",
-              };
-              return (
-                <button
-                  key={f}
-                  onClick={() => {
-                    setFilter(f);
-                    setPage(1);
-                  }}
-                  className={`px-3 py-1 text-xs border ${
-                    filter === f
-                      ? "bg-primary text-white border-primary"
-                      : "border-gray-200 text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  {labels[f]}
-                </button>
-              );
-            },
-          )}
+          {["all", "cheaper", "expensive", "unmatched"].map((f) => {
+            const labels = {
+              all: `All (${filteredRows.length})`,
+              cheaper: `We're cheaper (${cheaperCount})`,
+              expensive: `They're cheaper (${expensiveCount})`,
+              unmatched: "No price",
+            };
+            return (
+              <button
+                key={f}
+                onClick={() => {
+                  setFilter(f);
+                  setPage(1);
+                }}
+                className={`px-3 py-1 text-xs border ${
+                  filter === f
+                    ? "bg-primary text-white border-primary"
+                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                }`}
+              >
+                {labels[f]}
+              </button>
+            );
+          })}
         </div>
 
         {/* Fetch all button for active competitor */}

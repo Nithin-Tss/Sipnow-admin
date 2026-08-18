@@ -180,9 +180,7 @@ export default function Promotions() {
         ))}
       </div>
 
-      {error && (
-        <p className="text-sm text-red-500 mb-4">{error.message}</p>
-      )}
+      {error && <p className="text-sm text-red-500 mb-4">{error.message}</p>}
 
       {isLoading ? (
         <p className="text-sm text-gray-400">Loading…</p>

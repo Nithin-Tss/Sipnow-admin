@@ -63,8 +63,7 @@ export default function Catalogue() {
   });
 
   const renameMutation = useMutation({
-    mutationFn: ({ id, name }) =>
-      api.put(`/admin/catalogue/${id}`, { name }),
+    mutationFn: ({ id, name }) => api.put(`/admin/catalogue/${id}`, { name }),
     onSuccess: () => {
       setRenaming(null);
       queryClient.invalidateQueries({ queryKey: ["catalogue"] });
@@ -86,8 +85,7 @@ export default function Catalogue() {
   });
 
   const reorderMutation = useMutation({
-    mutationFn: (items) =>
-      api.put("/admin/catalogue/reorder", items),
+    mutationFn: (items) => api.put("/admin/catalogue/reorder", items),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["catalogue"] }),
   });
 
@@ -120,10 +118,7 @@ export default function Catalogue() {
     try {
       const form = new FormData();
       form.append("image", file);
-      const result = await api.upload(
-        "/admin/upload/image",
-        form,
-      );
+      const result = await api.upload("/admin/upload/image", form);
       setEditingImage((prev) => (prev ? { ...prev, url: result.url } : null));
     } catch {
       // keep open
@@ -159,10 +154,7 @@ export default function Catalogue() {
     try {
       const text = await file.text();
       const nodes = JSON.parse(text);
-      const result = await api.post(
-        "/admin/catalogue/import",
-        { nodes },
-      );
+      const result = await api.post("/admin/catalogue/import", { nodes });
       setImportStatus(result);
       queryClient.invalidateQueries({ queryKey: ["catalogue"] });
     } catch {
@@ -247,9 +239,7 @@ export default function Catalogue() {
             {isOpen ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
           </button>
 
-          <span
-            className={`w-1.5 h-1.5 shrink-0 ${LEVEL_DOT[level]}`}
-          />
+          <span className={`w-1.5 h-1.5 shrink-0 ${LEVEL_DOT[level]}`} />
 
           {/* name / rename input */}
           {renaming?.id === node.id ? (
@@ -422,9 +412,7 @@ export default function Catalogue() {
       >
         <span className="w-4 shrink-0" />
         <span className="w-5" />
-        <span
-          className={`w-1.5 h-1.5 shrink-0 ${LEVEL_DOT[level]}`}
-        />
+        <span className={`w-1.5 h-1.5 shrink-0 ${LEVEL_DOT[level]}`} />
         <input
           autoFocus
           value={addName}

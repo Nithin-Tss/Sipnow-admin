@@ -382,9 +382,7 @@ describe("Catalogue page", () => {
       ).toBeInTheDocument(),
     );
     const file = new File(["img"], "wines.jpg", { type: "image/jpeg" });
-    const fileInput = document.querySelector(
-      'input[accept="image/*"]',
-    );
+    const fileInput = document.querySelector('input[accept="image/*"]');
     fireEvent.change(fileInput, { target: { files: [file] } });
     await waitFor(() => expect(vi.mocked(api.upload)).toHaveBeenCalled());
   });
@@ -465,9 +463,7 @@ describe("Catalogue page", () => {
     const file = new File([json], "catalogue.json", {
       type: "application/json",
     });
-    const fileInput = document.querySelector(
-      'input[accept=".json"]',
-    );
+    const fileInput = document.querySelector('input[accept=".json"]');
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() =>
@@ -489,9 +485,7 @@ describe("Catalogue page", () => {
     const file = new File(["[{}]"], "catalogue.json", {
       type: "application/json",
     });
-    const fileInput = document.querySelector(
-      'input[accept=".json"]',
-    );
+    const fileInput = document.querySelector('input[accept=".json"]');
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() =>
@@ -511,9 +505,7 @@ describe("Catalogue page", () => {
     const file = new File(['[{"name":"Beer"}]'], "catalogue.json", {
       type: "application/json",
     });
-    const fileInput = document.querySelector(
-      'input[accept=".json"]',
-    );
+    const fileInput = document.querySelector('input[accept=".json"]');
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() =>

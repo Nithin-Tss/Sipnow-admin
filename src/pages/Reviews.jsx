@@ -41,9 +41,7 @@ function ServiceReviews() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-service-reviews", page],
     queryFn: () =>
-      api.get(
-        `/admin/service-reviews?page=${page}&limit=${PER_PAGE}`,
-      ),
+      api.get(`/admin/service-reviews?page=${page}&limit=${PER_PAGE}`),
     placeholderData: (prev) => prev,
   });
 

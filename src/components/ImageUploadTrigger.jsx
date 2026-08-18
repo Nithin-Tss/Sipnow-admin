@@ -19,9 +19,7 @@ export default function ImageUploadTrigger({
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={(e) =>
-          e.target.files?.[0] && onFileSelect(e.target.files[0])
-        }
+        onChange={(e) => e.target.files?.[0] && onFileSelect(e.target.files[0])}
       />
       <p className="text-xs text-gray-400 mt-1">{helpText}</p>
     </>

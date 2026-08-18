@@ -480,35 +480,27 @@ describe("Compare page", () => {
 
   it("calls api.delete with confirm when delete button clicked", async () => {
     const confirmSpy = vi.spyOn(globalThis, "confirm").mockReturnValue(true);
-    vi.mocked(api.delete).mockResolvedValue(
-      undefined,
-    );
+    vi.mocked(api.delete).mockResolvedValue(undefined);
     renderCompare();
     await waitFor(() =>
       expect(screen.getByText("Asahi Beer")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByTitle(`Delete ${MOCK_COMPETITOR.name}`));
     await waitFor(() =>
-      expect(
-        vi.mocked(api.delete),
-      ).toHaveBeenCalledWith("/competitors/comp1"),
+      expect(vi.mocked(api.delete)).toHaveBeenCalledWith("/competitors/comp1"),
     );
     confirmSpy.mockRestore();
   });
 
   it("does not call api.delete when confirm is cancelled", async () => {
     const confirmSpy = vi.spyOn(globalThis, "confirm").mockReturnValue(false);
-    vi.mocked(api.delete).mockResolvedValue(
-      undefined,
-    );
+    vi.mocked(api.delete).mockResolvedValue(undefined);
     renderCompare();
     await waitFor(() =>
       expect(screen.getByText("Asahi Beer")).toBeInTheDocument(),
     );
     fireEvent.click(screen.getByTitle(`Delete ${MOCK_COMPETITOR.name}`));
-    expect(
-      vi.mocked(api.delete),
-    ).not.toHaveBeenCalled();
+    expect(vi.mocked(api.delete)).not.toHaveBeenCalled();
     confirmSpy.mockRestore();
   });
 });

@@ -378,9 +378,7 @@ describe("Offers page (General Promotions)", () => {
     );
 
     const file = new File(["content"], "banner.jpg", { type: "image/jpeg" });
-    const fileInput = document.querySelector(
-      "input[type='file']",
-    );
+    const fileInput = document.querySelector("input[type='file']");
     if (fileInput) {
       fireEvent.change(fileInput, { target: { files: [file] } });
       await waitFor(() => expect(vi.mocked(api.upload)).toHaveBeenCalled());
@@ -401,9 +399,7 @@ describe("Offers page (General Promotions)", () => {
     );
 
     const file = new File(["content"], "banner.jpg", { type: "image/jpeg" });
-    const fileInput = document.querySelector(
-      "input[type='file']",
-    );
+    const fileInput = document.querySelector("input[type='file']");
     if (fileInput) {
       fireEvent.change(fileInput, { target: { files: [file] } });
       await waitFor(() =>

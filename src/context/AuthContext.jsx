@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useMemo,
-} from "react";
+import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { api, saveToken, clearToken, getToken } from "../lib/api";
 
 const AuthContext = createContext(null);
@@ -29,10 +23,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function login(email, password) {
-    const data = await api.post(
-      "/auth/login",
-      { email, password },
-    );
+    const data = await api.post("/auth/login", { email, password });
     if (
       data.user.role !== "admin" &&
       data.user.role !== "store_owner" &&

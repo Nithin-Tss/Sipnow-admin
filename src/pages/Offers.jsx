@@ -118,10 +118,7 @@ export default function Offers() {
     fd.append("image", file);
     setUploadingImg(true);
     try {
-      const res = await api.upload(
-        "/admin/upload/image?type=offer",
-        fd,
-      );
+      const res = await api.upload("/admin/upload/image?type=offer", fd);
       f("imageUrl", res.url);
     } catch (err) {
       setFormErr(err instanceof Error ? err.message : "Image upload failed");

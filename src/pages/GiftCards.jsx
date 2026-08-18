@@ -35,16 +35,13 @@ export default function GiftCards() {
         limit: String(PER_PAGE),
       });
       if (search) params.set("search", search);
-      return api.get(
-        `/gift-cards/admin?${params}`,
-      );
+      return api.get(`/gift-cards/admin?${params}`);
     },
     placeholderData: keepPreviousData,
   });
 
   const toggleMutation = useMutation({
-    mutationFn: (id) =>
-      api.patch(`/gift-cards/${id}/toggle`, {}),
+    mutationFn: (id) => api.patch(`/gift-cards/${id}/toggle`, {}),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["admin-gift-cards"] }),
   });
@@ -178,7 +175,9 @@ export default function GiftCards() {
                             >
                               <ChevronDown
                                 size={15}
-                                className={expanded === card.id ? "rotate-180" : ""}
+                                className={
+                                  expanded === card.id ? "rotate-180" : ""
+                                }
                               />
                             </button>
                           )}

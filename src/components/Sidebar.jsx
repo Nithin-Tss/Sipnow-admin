@@ -69,7 +69,9 @@ export default function Sidebar({ collapsed, onToggle }) {
             Admin
           </span>
         )}
-        {collapsed && <span className="font-bold text-gray-900 text-lg">R</span>}
+        {collapsed && (
+          <span className="font-bold text-gray-900 text-lg">R</span>
+        )}
       </div>
 
       {/* Nav */}

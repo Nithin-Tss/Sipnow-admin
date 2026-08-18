@@ -25,15 +25,12 @@ export default function Messages() {
   const { data, isLoading } = useQuery({
     queryKey: ["admin-contact-messages", page],
     queryFn: () =>
-      api.get(
-        `/admin/contact-messages?page=${page}&limit=${PER_PAGE}`,
-      ),
+      api.get(`/admin/contact-messages?page=${page}&limit=${PER_PAGE}`),
     placeholderData: (prev) => prev,
   });
 
   const markReadMutation = useMutation({
-    mutationFn: (id) =>
-      api.patch(`/admin/contact-messages/${id}/read`, {}),
+    mutationFn: (id) => api.patch(`/admin/contact-messages/${id}/read`, {}),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["admin-contact-messages"] }),
   });

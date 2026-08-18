@@ -386,9 +386,7 @@ describe("Stock page", () => {
 
     const csvContent = "supplierCode,quantity\nDM-001,50\n";
     const file = new File([csvContent], "stock.csv", { type: "text/csv" });
-    const fileInput = document.querySelector(
-      'input[accept=".csv"]',
-    );
+    const fileInput = document.querySelector('input[accept=".csv"]');
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await screen.findByText("Review Stock Import", undefined, {
@@ -417,9 +415,7 @@ describe("Stock page", () => {
 
     const csvContent = "supplierCode,quantity\nDM-001,50\n";
     const file = new File([csvContent], "stock.csv", { type: "text/csv" });
-    const fileInput = document.querySelector(
-      'input[accept=".csv"]',
-    );
+    const fileInput = document.querySelector('input[accept=".csv"]');
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await screen.findByText("Review Stock Import", undefined, {
@@ -479,9 +475,7 @@ describe("Stock page", () => {
         "stock.csv",
         { type: "text/csv" },
       );
-      const fileInput = document.querySelector(
-        'input[accept=".csv"]',
-      );
+      const fileInput = document.querySelector('input[accept=".csv"]');
       fireEvent.change(fileInput, { target: { files: [file] } });
       await screen.findByText("Review Stock Import", undefined, {
         timeout: 5000,
@@ -507,9 +501,7 @@ describe("Stock page", () => {
         "stock.csv",
         { type: "text/csv" },
       );
-      const fileInput = document.querySelector(
-        'input[accept=".csv"]',
-      );
+      const fileInput = document.querySelector('input[accept=".csv"]');
       fireEvent.change(fileInput, { target: { files: [file] } });
       await screen.findByText("Review Stock Import", undefined, {
         timeout: 5000,
@@ -540,9 +532,8 @@ describe("Stock page", () => {
 
     it("searches and shows product dropdown in unmapped row", async () => {
       const _setTimeout = window.setTimeout.bind(window);
-      vi.spyOn(window, "setTimeout").mockImplementation(
-        (fn, delay, ...args) =>
-          _setTimeout(fn, delay === 300 ? 10 : delay, ...args),
+      vi.spyOn(window, "setTimeout").mockImplementation((fn, delay, ...args) =>
+        _setTimeout(fn, delay === 300 ? 10 : delay, ...args),
       );
       await openReviewModalWithUnmappedRow();
       const searchInput = screen.getByPlaceholderText("Search product to map…");
@@ -553,9 +544,8 @@ describe("Stock page", () => {
 
     it("selects a product from dropdown and shows mapping confirmation", async () => {
       const _setTimeout = window.setTimeout.bind(window);
-      vi.spyOn(window, "setTimeout").mockImplementation(
-        (fn, delay, ...args) =>
-          _setTimeout(fn, delay === 300 ? 10 : delay, ...args),
+      vi.spyOn(window, "setTimeout").mockImplementation((fn, delay, ...args) =>
+        _setTimeout(fn, delay === 300 ? 10 : delay, ...args),
       );
       await openReviewModalWithUnmappedRow();
       const searchInput = screen.getByPlaceholderText("Search product to map…");

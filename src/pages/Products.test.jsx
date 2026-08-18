@@ -709,9 +709,7 @@ describe("Products page", () => {
     );
 
     const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
-    const fileInput = document.querySelector(
-      "input[type='file']",
-    );
+    const fileInput = document.querySelector("input[type='file']");
     if (fileInput) {
       fireEvent.change(fileInput, { target: { files: [file] } });
       await waitFor(() => expect(vi.mocked(api.upload)).toHaveBeenCalled());
@@ -732,9 +730,7 @@ describe("Products page", () => {
     );
 
     const file = new File(["content"], "test.jpg", { type: "image/jpeg" });
-    const fileInput = document.querySelector(
-      "input[type='file']",
-    );
+    const fileInput = document.querySelector("input[type='file']");
     if (fileInput) {
       fireEvent.change(fileInput, { target: { files: [file] } });
       await waitFor(() =>
@@ -752,9 +748,7 @@ describe("Products page", () => {
     const file = new File(["sku,name\n10000001,Test"], "products.csv", {
       type: "text/csv",
     });
-    const csvInput = document.querySelector(
-      'input[accept=".csv"]',
-    );
+    const csvInput = document.querySelector('input[accept=".csv"]');
     fireEvent.change(csvInput, { target: { files: [file] } });
     expect(await screen.findByText("Uploading…")).toBeInTheDocument();
   });
@@ -768,9 +762,7 @@ describe("Products page", () => {
     const file = new File(["sku,name\n10000001,Test"], "products.csv", {
       type: "text/csv",
     });
-    const csvInput = document.querySelector(
-      'input[accept=".csv"]',
-    );
+    const csvInput = document.querySelector('input[accept=".csv"]');
     fireEvent.change(csvInput, { target: { files: [file] } });
     expect(await screen.findByText("CSV parse error")).toBeInTheDocument();
   });
@@ -802,9 +794,7 @@ describe("Products page", () => {
     const file = new File(["sku,name\n10000001,Test"], "products.csv", {
       type: "text/csv",
     });
-    const csvInput = document.querySelector(
-      'input[accept=".csv"]',
-    );
+    const csvInput = document.querySelector('input[accept=".csv"]');
     fireEvent.change(csvInput, { target: { files: [file] } });
     await waitFor(() =>
       expect(vi.mocked(api.upload)).toHaveBeenCalledWith(
@@ -827,31 +817,19 @@ describe("Products page", () => {
       "pos.csv",
       { type: "text/csv" },
     );
-    const csvInput = document.querySelector(
-      'input[accept=".csv"]',
-    );
+    const csvInput = document.querySelector('input[accept=".csv"]');
     fireEvent.change(csvInput, { target: { files: [file] } });
 
     await screen.findByText(/pos\.csv/);
-    const skuSelect = document.getElementById(
-      "pos-field-sku",
-    );
+    const skuSelect = document.getElementById("pos-field-sku");
     expect(skuSelect.value).toBe("ID");
-    const caseQtySelect = document.getElementById(
-      "pos-field-caseQty",
-    );
+    const caseQtySelect = document.getElementById("pos-field-caseQty");
     expect(caseQtySelect.value).toBe("Case Quantity");
-    const itemsOnHandSelect = document.getElementById(
-      "pos-field-itemsOnHand",
-    );
+    const itemsOnHandSelect = document.getElementById("pos-field-itemsOnHand");
     expect(itemsOnHandSelect.value).toBe("Items on hand");
-    const tierQtySelect = document.getElementById(
-      "pos-field-tierQty",
-    );
+    const tierQtySelect = document.getElementById("pos-field-tierQty");
     expect(tierQtySelect.value).toBe("Quantity");
-    const tierPriceSelect = document.getElementById(
-      "pos-field-tierPrice",
-    );
+    const tierPriceSelect = document.getElementById("pos-field-tierPrice");
     expect(tierPriceSelect.value).toBe("Price");
   });
 
@@ -871,9 +849,7 @@ describe("Products page", () => {
     const file = new File(["ID,Quantity,Price\n10000001,1,40"], "pos.csv", {
       type: "text/csv",
     });
-    const csvInput = document.querySelector(
-      'input[accept=".csv"]',
-    );
+    const csvInput = document.querySelector('input[accept=".csv"]');
     fireEvent.change(csvInput, { target: { files: [file] } });
     await screen.findByText(/pos\.csv/);
 
@@ -884,7 +860,7 @@ describe("Products page", () => {
         expect.any(FormData),
       ),
     );
-    const fd = vi.mocked(api.upload).mock.calls[0][1] ;
+    const fd = vi.mocked(api.upload).mock.calls[0][1];
     expect(fd.get("fullSync")).toBe("true");
     expect(await screen.findByText(/Updated: 1/)).toBeInTheDocument();
     expect(screen.getByText(/Zeroed out of stock: 12/)).toBeInTheDocument();
@@ -913,9 +889,7 @@ describe("Products page", () => {
     const file = new File(["ID,Quantity,Price\nGHOST,1,10"], "pos.csv", {
       type: "text/csv",
     });
-    const csvInput = document.querySelector(
-      'input[accept=".csv"]',
-    );
+    const csvInput = document.querySelector('input[accept=".csv"]');
     fireEvent.change(csvInput, { target: { files: [file] } });
     await screen.findByText(/pos\.csv/);
 
@@ -966,9 +940,7 @@ describe("Products page", () => {
     const file = new File(["ID,Quantity,Price\n10000001,1,40"], "pos.csv", {
       type: "text/csv",
     });
-    const csvInput = document.querySelector(
-      'input[accept=".csv"]',
-    );
+    const csvInput = document.querySelector('input[accept=".csv"]');
     fireEvent.change(csvInput, { target: { files: [file] } });
     await screen.findByText(/pos\.csv/);
 
@@ -976,7 +948,7 @@ describe("Products page", () => {
 
     fireEvent.click(screen.getByText("Import"));
     await waitFor(() => expect(vi.mocked(api.upload)).toHaveBeenCalled());
-    const fd = vi.mocked(api.upload).mock.calls[0][1] ;
+    const fd = vi.mocked(api.upload).mock.calls[0][1];
     expect(fd.get("fullSync")).toBe("false");
   });
 
@@ -990,9 +962,7 @@ describe("Products page", () => {
     const file = new File(["ID,Quantity,Price\n10000001,1,40"], "pos.csv", {
       type: "text/csv",
     });
-    const csvInput = document.querySelector(
-      'input[accept=".csv"]',
-    );
+    const csvInput = document.querySelector('input[accept=".csv"]');
     fireEvent.change(csvInput, { target: { files: [file] } });
     await screen.findByText(/pos\.csv/);
 
@@ -1145,14 +1115,10 @@ describe("Products page", () => {
         screen.getByRole("heading", { name: "Add Product" }),
       ).toBeInTheDocument(),
     );
-    const promotionPriceInput = document.getElementById(
-      "prodPromotionPrice",
-    );
+    const promotionPriceInput = document.getElementById("prodPromotionPrice");
     expect(promotionPriceInput).toBeDisabled();
 
-    const promotionTypeSelect = document.getElementById(
-      "prodPromotionType",
-    );
+    const promotionTypeSelect = document.getElementById("prodPromotionType");
     fireEvent.change(promotionTypeSelect, {
       target: { value: "CLEARANCE" },
     });
@@ -1188,13 +1154,12 @@ describe("Products page", () => {
   it("polls import job via fake timers and shows completion result", async () => {
     // Speed up the 3000ms poll interval so the test doesn't wait 3s
     const _setInterval = window.setInterval.bind(window);
-    vi.spyOn(window, "setInterval").mockImplementation(
-      (fn, delay, ...args) =>
-        _setInterval(
-          fn,
-          typeof delay === "number" && delay >= 1000 ? 10 : delay,
-          ...args,
-        ),
+    vi.spyOn(window, "setInterval").mockImplementation((fn, delay, ...args) =>
+      _setInterval(
+        fn,
+        typeof delay === "number" && delay >= 1000 ? 10 : delay,
+        ...args,
+      ),
     );
 
     vi.mocked(api.upload).mockResolvedValue({
@@ -1222,9 +1187,7 @@ describe("Products page", () => {
     fireEvent.click(screen.getByText("Import CSV"));
     await screen.findByText(/Import Products CSV/i);
 
-    const csvInput = document.querySelector(
-      'input[accept=".csv"]',
-    );
+    const csvInput = document.querySelector('input[accept=".csv"]');
     const file = new File(["sku,name\n10000001,Test"], "p.csv", {
       type: "text/csv",
     });

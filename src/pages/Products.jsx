@@ -430,9 +430,7 @@ export default function Products() {
     if (!importJobId) return;
     const interval = setInterval(async () => {
       try {
-        const job = await api.get(
-          `/admin/products/import-job/${importJobId}`,
-        );
+        const job = await api.get(`/admin/products/import-job/${importJobId}`);
         setImportProgress({
           processed: job.processed,
           total: job.total,
@@ -711,10 +709,7 @@ export default function Products() {
     fd.append("image", file);
     setUploadingImg(true);
     try {
-      const res = await api.upload(
-        "/admin/upload/image?type=product",
-        fd,
-      );
+      const res = await api.upload("/admin/upload/image?type=product", fd);
       f("imageUrl", res.url);
     } catch (e) {
       setFormErr(e instanceof Error ? e.message : "Image upload failed");
@@ -2316,21 +2311,15 @@ export default function Products() {
               <p className="font-semibold text-gray-700">Required columns</p>
               <ul className="list-disc list-inside space-y-0.5">
                 <li>
-                  <code className="font-mono bg-gray-200 px-1">
-                    sku
-                  </code>{" "}
-                  — 8-digit internal product code (unique)
+                  <code className="font-mono bg-gray-200 px-1">sku</code> —
+                  8-digit internal product code (unique)
                 </li>
                 <li>
-                  <code className="font-mono bg-gray-200 px-1">
-                    name
-                  </code>{" "}
-                  — product name
+                  <code className="font-mono bg-gray-200 px-1">name</code> —
+                  product name
                 </li>
                 <li>
-                  <code className="font-mono bg-gray-200 px-1">
-                    categories
-                  </code>{" "}
+                  <code className="font-mono bg-gray-200 px-1">categories</code>{" "}
                   — pipe-separated paths, each as{" "}
                   <code className="font-mono bg-gray-200 px-1">
                     Category/Subcategory/Type
@@ -2354,33 +2343,18 @@ export default function Products() {
                     promotionType
                   </code>{" "}
                   — one of{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    NONE
-                  </code>
-                  ,{" "}
+                  <code className="font-mono bg-gray-200 px-1">NONE</code>,{" "}
                   <code className="font-mono bg-gray-200 px-1">
                     IN_STORE_PROMOTION
                   </code>
                   ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    CLEARANCE
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    MEMBER
-                  </code>{" "}
+                  <code className="font-mono bg-gray-200 px-1">CLEARANCE</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">MEMBER</code>{" "}
                   (defaults to NONE),{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    stock
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    isNew
-                  </code>{" "}
+                  <code className="font-mono bg-gray-200 px-1">stock</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">isNew</code>{" "}
                   (true/false),{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    imageUrl
-                  </code>
+                  <code className="font-mono bg-gray-200 px-1">imageUrl</code>
                 </li>
                 <li>
                   <code className="font-mono bg-gray-200 px-1">
@@ -2405,60 +2379,23 @@ export default function Products() {
                     alcoholVolume
                   </code>{" "}
                   (%),{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    volumeMl
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    vintage
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    packOf
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    packPrice
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    caseOf
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    casePrice
-                  </code>
+                  <code className="font-mono bg-gray-200 px-1">volumeMl</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">vintage</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">packOf</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">packPrice</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">caseOf</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">casePrice</code>
                 </li>
                 <li>
-                  <code className="font-mono bg-gray-200 px-1">
-                    country
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    region
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    maker
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    brandName
-                  </code>
+                  <code className="font-mono bg-gray-200 px-1">country</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">region</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">maker</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">brandName</code>
                 </li>
                 <li>
-                  <code className="font-mono bg-gray-200 px-1">
-                    sweetness
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    wineBody
-                  </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    closure
-                  </code>
-                  ,{" "}
+                  <code className="font-mono bg-gray-200 px-1">sweetness</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">wineBody</code>,{" "}
+                  <code className="font-mono bg-gray-200 px-1">closure</code>,{" "}
                   <code className="font-mono bg-gray-200 px-1">
                     grapeVariety
                   </code>
@@ -2466,11 +2403,7 @@ export default function Products() {
                   <code className="font-mono bg-gray-200 px-1">
                     flavorNotes
                   </code>
-                  ,{" "}
-                  <code className="font-mono bg-gray-200 px-1">
-                    aroma
-                  </code>
-                  ,{" "}
+                  , <code className="font-mono bg-gray-200 px-1">aroma</code>,{" "}
                   <code className="font-mono bg-gray-200 px-1">
                     ingredients
                   </code>

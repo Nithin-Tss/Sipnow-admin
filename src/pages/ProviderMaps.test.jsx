@@ -429,9 +429,8 @@ describe("Suppliers page", () => {
     let _setTimeout;
     beforeEach(() => {
       _setTimeout = window.setTimeout.bind(window);
-      vi.spyOn(window, "setTimeout").mockImplementation(
-        (fn, delay, ...args) =>
-          _setTimeout(fn, delay === 300 ? 10 : delay, ...args),
+      vi.spyOn(window, "setTimeout").mockImplementation((fn, delay, ...args) =>
+        _setTimeout(fn, delay === 300 ? 10 : delay, ...args),
       );
     });
     afterEach(() => {
