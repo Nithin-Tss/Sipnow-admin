@@ -1,6 +1,7 @@
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import Layout from "./components/Layout";
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import Offers from "./pages/Offers";
@@ -18,12 +19,26 @@ import GiftCards from "./pages/GiftCards";
 import Compare from "./pages/Compare";
 import Stores from "./pages/Stores";
 
+function RequireAuth({ children }) {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <HashRouter>
         <Routes>
-          <Route path="/" element={<Layout />}>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <RequireAuth>
+                <Layout />
+              </RequireAuth>
+            }
+          >
             <Route index element={<Dashboard />} />
             <Route path="products" element={<Products />} />
             <Route path="catalogue" element={<Catalogue />} />

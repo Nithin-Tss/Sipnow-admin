@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { apiFetch } from "../lib/api";
+import {
+  fetchProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "../lib/mockProducts";
 import { inputCls } from "../lib/ui";
 import SearchInput from "../components/SearchInput";
 import PaginationBar from "../components/PaginationBar";
@@ -37,10 +42,7 @@ export default function Products() {
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["products", search, page],
-    queryFn: () =>
-      apiFetch(
-        `/api/products?page=${page}&limit=${PER_PAGE}&q=${encodeURIComponent(search)}`,
-      ),
+    queryFn: () => fetchProducts({ search, page, perPage: PER_PAGE }),
     placeholderData: (prev) => prev,
   });
 
@@ -55,14 +57,8 @@ export default function Products() {
   const saveMutation = useMutation({
     mutationFn: (payload) =>
       payload.id
-        ? apiFetch(`/api/products/${payload.id}`, {
-            method: "PUT",
-            body: JSON.stringify(payload.body),
-          })
-        : apiFetch(`/api/products`, {
-            method: "POST",
-            body: JSON.stringify(payload.body),
-          }),
+        ? updateProduct(payload.id, payload.body)
+        : createProduct(payload.body),
     onSuccess: () => {
       invalidate();
       setEditing(null);
@@ -70,7 +66,7 @@ export default function Products() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => apiFetch(`/api/products/${id}`, { method: "DELETE" }),
+    mutationFn: (id) => deleteProduct(id),
     onSuccess: () => {
       invalidate();
       setDeleting(null);

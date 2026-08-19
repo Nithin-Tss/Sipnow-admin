@@ -1,10 +1,44 @@
+import CrudPage from "../components/CrudPage";
+import { storesStore as store } from "../lib/entityStores";
+
+const fields = [
+  { name: "name", label: "Store name", required: true, colSpan: 2 },
+  { name: "address", label: "Address", colSpan: 2 },
+  { name: "city", label: "City" },
+  { name: "phone", label: "Phone" },
+  { name: "active", label: "Active", type: "checkbox", default: true },
+];
+
+const columns = [
+  { key: "name", label: "Name" },
+  { key: "city", label: "City" },
+  { key: "phone", label: "Phone" },
+  {
+    key: "active",
+    label: "Status",
+    render: (s) => (
+      <span
+        className={`px-2 py-0.5 text-xs ${
+          s.active ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+        }`}
+      >
+        {s.active ? "Open" : "Closed"}
+      </span>
+    ),
+  },
+];
+
 export default function Stores() {
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-semibold text-gray-900">Stores</h2>
-      <p className="mt-4 text-sm text-gray-400">
-        This page is not connected to a backend.
-      </p>
-    </div>
+    <CrudPage
+      title="Stores"
+      entityName="Store"
+      store={store}
+      queryKey="stores"
+      columns={columns}
+      fields={fields}
+      searchFields={["name", "city"]}
+      searchPlaceholder="Search stores…"
+    />
   );
 }

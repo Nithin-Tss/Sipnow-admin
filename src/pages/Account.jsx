@@ -17,10 +17,6 @@ export default function Account() {
           {user?.role?.replace("_", " ")}
         </span>
       </div>
-
-      <p className="mt-4 text-sm text-gray-400">
-        This page is not connected to a backend.
-      </p>
     </div>
   );
 }
