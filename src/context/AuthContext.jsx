@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react";
+import { apiFetch, setToken } from "../lib/apiClient";
 
 const AuthContext = createContext(null);
 
@@ -13,17 +14,6 @@ function loadSession() {
   }
 }
 
-function mockUserFromEmail(email) {
-  const name = email.split("@")[0] || "admin";
-  return {
-    id: "local-admin",
-    firstName: name.charAt(0).toUpperCase() + name.slice(1),
-    lastName: "User",
-    email,
-    role: "admin",
-  };
-}
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => loadSession());
   const [loading, setLoading] = useState(false);
@@ -32,10 +22,23 @@ export function AuthProvider({ children }) {
     () => ({
       user,
       loading,
-      login: async (email) => {
+      login: async (email, password) => {
         setLoading(true);
         try {
-          const loggedInUser = mockUserFromEmail(email);
+          const data = await apiFetch("/auth/login", {
+            method: "POST",
+            body: JSON.stringify({ email, password }),
+          });
+          if (data.user.role !== "admin") {
+            throw new Error("This account does not have admin access.");
+          }
+          const [firstName = "", ...rest] = (data.user.name || "").split(" ");
+          const loggedInUser = {
+            ...data.user,
+            firstName,
+            lastName: rest.join(" "),
+          };
+          setToken(data.token);
           localStorage.setItem(SESSION_KEY, JSON.stringify(loggedInUser));
           setUser(loggedInUser);
           return loggedInUser;
@@ -44,6 +47,7 @@ export function AuthProvider({ children }) {
         }
       },
       logout: () => {
+        setToken(null);
         localStorage.removeItem(SESSION_KEY);
         setUser(null);
       },

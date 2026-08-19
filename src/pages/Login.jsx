@@ -23,8 +23,12 @@ export default function Login() {
       return;
     }
     setError("");
-    await login(email.trim());
-    navigate(location.state?.from ?? "/", { replace: true });
+    try {
+      await login(email.trim(), password);
+      navigate(location.state?.from ?? "/", { replace: true });
+    } catch (err) {
+      setError(err.message);
+    }
   }
 
   return (

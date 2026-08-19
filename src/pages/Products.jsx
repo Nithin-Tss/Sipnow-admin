@@ -7,7 +7,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-} from "../lib/mockProducts";
+} from "../lib/productsApi";
 import { inputCls } from "../lib/ui";
 import { parseCsvRecords, toCsv, downloadCsv } from "../lib/csv";
 import { useAuth } from "../context/AuthContext";
