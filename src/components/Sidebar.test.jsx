@@ -100,9 +100,9 @@ describe("Sidebar – expanded, admin", () => {
 });
 
 describe("Sidebar – collapsed", () => {
-  it("shows R logo when collapsed", () => {
+  it("shows S logo when collapsed", () => {
     renderSidebar(true);
-    expect(screen.getByText("R")).toBeInTheDocument();
+    expect(screen.getByText("S")).toBeInTheDocument();
   });
 
   it("does not show user name text when collapsed", () => {
