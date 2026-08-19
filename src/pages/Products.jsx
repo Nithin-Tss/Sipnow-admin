@@ -253,19 +253,19 @@ export default function Products() {
         <div className="flex items-center gap-2">
           <button
             onClick={handleExport}
-            className="flex items-center gap-1.5 border border-gray-300 text-gray-700 text-sm px-4 py-2 hover:bg-gray-50"
+            className="flex items-center gap-1.5 rounded-lg border border-gray-300 text-gray-700 text-sm px-4 py-2 hover:bg-gray-50 transition-colors"
           >
             <Download size={14} /> Export CSV
           </button>
           <button
             onClick={openImport}
-            className="flex items-center gap-1.5 border border-gray-300 text-gray-700 text-sm px-4 py-2 hover:bg-gray-50"
+            className="flex items-center gap-1.5 rounded-lg border border-gray-300 text-gray-700 text-sm px-4 py-2 hover:bg-gray-50 transition-colors"
           >
             <Upload size={14} /> Import CSV
           </button>
           <button
             onClick={openCreate}
-            className="flex items-center gap-1.5 bg-primary text-white text-sm px-4 py-2 hover:opacity-90"
+            className="flex items-center gap-1.5 rounded-lg bg-primary text-white text-sm px-4 py-2 hover:opacity-90 transition-opacity shadow-sm"
           >
             <Plus size={14} /> Add Product
           </button>
@@ -283,10 +283,10 @@ export default function Products() {
         />
       </div>
 
-      <div className="mt-4 bg-white border border-gray-200">
+      <div className="mt-4 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200 text-left text-xs text-gray-500">
+            <tr className="border-b border-gray-200 bg-gray-50/60 text-left text-xs text-gray-500">
               <th className="px-4 py-2.5 font-medium">Name</th>
               <th className="px-4 py-2.5 font-medium">Category</th>
               <th className="px-4 py-2.5 font-medium">Price</th>
@@ -307,7 +307,7 @@ export default function Products() {
               <TableStateRow colSpan={7}>No products found.</TableStateRow>
             )}
             {items.map((p) => (
-              <tr key={p._id} className="hover:bg-gray-50">
+              <tr key={p._id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-4 py-2.5 text-gray-900">{p.name}</td>
                 <td className="px-4 py-2.5 text-gray-600">{p.category}</td>
                 <td className="px-4 py-2.5 text-gray-600">
@@ -316,7 +316,7 @@ export default function Products() {
                 <td className="px-4 py-2.5 text-gray-600">{p.stockQuantity}</td>
                 <td className="px-4 py-2.5">
                   <span
-                    className={`px-2 py-0.5 text-xs ${
+                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                       p.inStock
                         ? "bg-green-50 text-green-700"
                         : "bg-red-50 text-red-700"
@@ -350,16 +350,16 @@ export default function Products() {
                   </label>
                 </td>
                 <td className="px-4 py-2.5">
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-1">
                     <button
                       onClick={() => openEdit(p)}
-                      className="p-1.5 text-gray-500 hover:text-primary"
+                      className="p-1.5 rounded-lg text-gray-500 hover:text-primary hover:bg-primary/10 transition-colors"
                     >
                       <Pencil size={14} />
                     </button>
                     <button
                       onClick={() => setDeleting(p)}
-                      className="p-1.5 text-gray-500 hover:text-red-600"
+                      className="p-1.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -486,39 +486,45 @@ export default function Products() {
                   setEditing({ ...editing, description: e.target.value })
                 }
               />
-              <input
-                disabled
-                placeholder="Verification email"
-                className={`${inputCls} bg-gray-50 text-gray-500`}
-                value={
-                  editing.verified
-                    ? editing.verificationEmail
-                    : `Will verify as ${user.email}`
-                }
-              />
-              <label className="flex items-center gap-2 text-sm text-gray-700">
-                <input
-                  type="checkbox"
-                  checked={editing.verified}
-                  disabled={!editing.isNew && verifyMutation.isPending}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    if (editing.isNew) {
-                      setEditing({
-                        ...editing,
-                        verified: checked,
-                        verificationEmail: checked ? user.email : "",
-                      });
-                    } else {
-                      verifyMutation.mutate({
-                        id: editing.id,
-                        verified: checked,
-                      });
-                    }
-                  }}
-                />
-                Verified by {user.email}
-              </label>
+              <div className="col-span-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5">
+                <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editing.verified}
+                    disabled={!editing.isNew && verifyMutation.isPending}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      if (editing.isNew) {
+                        setEditing({
+                          ...editing,
+                          verified: checked,
+                          verificationEmail: checked ? user.email : "",
+                        });
+                      } else {
+                        verifyMutation.mutate({
+                          id: editing.id,
+                          verified: checked,
+                        });
+                      }
+                    }}
+                  />
+                  <span className="font-medium">Verified</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                      editing.verified
+                        ? "bg-green-50 text-green-700"
+                        : "bg-gray-200 text-gray-600"
+                    }`}
+                  >
+                    {editing.verified ? "Verified" : "Unverified"}
+                  </span>
+                </label>
+                <p className="mt-1 pl-6 text-xs text-gray-500">
+                  {editing.verified
+                    ? `Verified by ${editing.verificationEmail}`
+                    : `Will be recorded as verified by ${user.email}`}
+                </p>
+              </div>
               <label className="col-span-2 flex items-center gap-2 text-sm text-gray-700">
                 <input
                   type="checkbox"
@@ -537,14 +543,14 @@ export default function Products() {
               <button
                 type="button"
                 onClick={() => setEditing(null)}
-                className="text-sm text-gray-600 border border-gray-300 px-4 py-2 hover:bg-gray-50"
+                className="text-sm rounded-lg text-gray-600 border border-gray-300 px-4 py-2 hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={saveMutation.isPending}
-                className="text-sm bg-primary text-white px-4 py-2 hover:opacity-90 disabled:opacity-60"
+                className="text-sm rounded-lg bg-primary text-white px-4 py-2 hover:opacity-90 disabled:opacity-60 transition-opacity shadow-sm"
               >
                 {saveMutation.isPending ? "Saving…" : "Save"}
               </button>
@@ -598,7 +604,7 @@ export default function Products() {
             <button
               type="button"
               onClick={() => setImporting(false)}
-              className="text-sm text-gray-600 border border-gray-300 px-4 py-2 hover:bg-gray-50"
+              className="text-sm rounded-lg text-gray-600 border border-gray-300 px-4 py-2 hover:bg-gray-50 transition-colors"
             >
               Close
             </button>

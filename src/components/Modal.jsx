@@ -27,7 +27,7 @@ export default function Modal({
         }}
       />
       <div
-        className={`relative bg-white border border-gray-300 w-full ${sizeClass} max-h-[90vh] flex flex-col`}
+        className={`relative bg-white border border-gray-200 rounded-xl shadow-lg w-full ${sizeClass} max-h-[90vh] flex flex-col`}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0">
           <h3 className="text-sm font-semibold text-gray-900 min-w-0">
@@ -35,7 +35,7 @@ export default function Modal({
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 p-0.5"
+            className="rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-1 transition-colors"
           >
             <X size={16} />
           </button>

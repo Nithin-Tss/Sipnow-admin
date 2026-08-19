@@ -15,7 +15,7 @@ export default function Layout() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-gray-50/60 overflow-hidden">
       <Sidebar collapsed={collapsed} onToggle={toggle} />
       <main className="flex-1 overflow-y-auto">
         <Outlet />

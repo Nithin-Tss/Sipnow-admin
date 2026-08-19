@@ -19,14 +19,14 @@ export default function PaginationBar({
           <button
             onClick={() => onPageChange(Math.max(1, page - 1))}
             disabled={page === 1}
-            className="px-2.5 py-1 text-xs border border-gray-300 disabled:opacity-40 hover:bg-gray-50"
+            className="rounded-lg px-2.5 py-1 text-xs border border-gray-300 disabled:opacity-40 hover:bg-gray-50 transition-colors"
           >
             ← Prev
           </button>
           <button
             onClick={() => onPageChange(Math.min(totalPages, page + 1))}
             disabled={page === totalPages}
-            className="px-2.5 py-1 text-xs border border-gray-300 disabled:opacity-40 hover:bg-gray-50"
+            className="rounded-lg px-2.5 py-1 text-xs border border-gray-300 disabled:opacity-40 hover:bg-gray-50 transition-colors"
           >
             Next →
           </button>
