@@ -14,7 +14,8 @@ const PER_PAGE = 20;
 function emptyFormFrom(fields) {
   const form = {};
   for (const field of fields) {
-    form[field.name] = field.default ?? (field.type === "checkbox" ? false : "");
+    form[field.name] =
+      field.default ?? (field.type === "checkbox" ? false : "");
   }
   return form;
 }
@@ -49,7 +50,8 @@ export default function CrudPage({
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [queryKey, search, page],
-    queryFn: () => store.list({ search, page, perPage: PER_PAGE, searchFields }),
+    queryFn: () =>
+      store.list({ search, page, perPage: PER_PAGE, searchFields }),
     placeholderData: (prev) => prev,
   });
 
@@ -308,8 +310,7 @@ export default function CrudPage({
                 deleting.productName ??
                 deleting.subject}
             </strong>
-            ?
-            This cannot be undone.
+            ? This cannot be undone.
           </p>
           <DeleteModalActions
             formErr={deleteMutation.error?.message}

@@ -14,7 +14,8 @@ const SEED_PRODUCTS = [
     volume: "750mL",
     manufacturer: "Château Margaux",
     origin: "Bordeaux, France",
-    description: "A rich, full-bodied red wine with notes of blackcurrant and cedar.",
+    description:
+      "A rich, full-bodied red wine with notes of blackcurrant and cedar.",
   },
   {
     _id: "seed-2",

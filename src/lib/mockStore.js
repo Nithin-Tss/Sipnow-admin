@@ -19,7 +19,12 @@ export function createMockStore(storageKey, seedItems) {
   }
 
   return {
-    async list({ search = "", page = 1, perPage = 20, searchFields = ["name"] } = {}) {
+    async list({
+      search = "",
+      page = 1,
+      perPage = 20,
+      searchFields = ["name"],
+    } = {}) {
       const all = load();
       const q = search.trim().toLowerCase();
       const filtered = q

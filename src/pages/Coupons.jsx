@@ -13,7 +13,12 @@ const fields = [
       { value: "fixed", label: "Fixed amount" },
     ],
   },
-  { name: "discountValue", label: "Discount value", type: "number", required: true },
+  {
+    name: "discountValue",
+    label: "Discount value",
+    type: "number",
+    required: true,
+  },
   { name: "expiresAt", label: "Expires on", type: "date", colSpan: 2 },
   { name: "active", label: "Active", type: "checkbox", default: true },
 ];

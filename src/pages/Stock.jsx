@@ -27,7 +27,9 @@ export default function Stock() {
   );
 
   function draftFor(product) {
-    return drafts[product._id]?.stockQuantity ?? String(product.stockQuantity ?? 0);
+    return (
+      drafts[product._id]?.stockQuantity ?? String(product.stockQuantity ?? 0)
+    );
   }
 
   function setDraft(id, value) {

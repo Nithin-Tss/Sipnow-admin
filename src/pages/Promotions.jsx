@@ -3,7 +3,12 @@ import { promotionsStore as store } from "../lib/entityStores";
 
 const fields = [
   { name: "title", label: "Promotion title", required: true, colSpan: 2 },
-  { name: "discountPercent", label: "Discount %", type: "number", required: true },
+  {
+    name: "discountPercent",
+    label: "Discount %",
+    type: "number",
+    required: true,
+  },
   { name: "startDate", label: "Start date", type: "date" },
   { name: "endDate", label: "End date", type: "date" },
   { name: "active", label: "Active", type: "checkbox", default: true },

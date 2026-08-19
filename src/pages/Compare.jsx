@@ -77,9 +77,7 @@ export default function Compare() {
                 <tbody className="divide-y divide-gray-100">
                   {ROWS.map((row) => (
                     <tr key={row.key}>
-                      <td className="px-4 py-2.5 text-gray-500">
-                        {row.label}
-                      </td>
+                      <td className="px-4 py-2.5 text-gray-500">{row.label}</td>
                       <td className="px-4 py-2.5 text-gray-900">
                         {row.render
                           ? row.render(left[row.key])

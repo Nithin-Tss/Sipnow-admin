@@ -3,7 +3,12 @@ import { giftCardsStore as store } from "../lib/entityStores";
 
 const fields = [
   { name: "code", label: "Gift card code", required: true, colSpan: 2 },
-  { name: "initialValue", label: "Initial value", type: "number", required: true },
+  {
+    name: "initialValue",
+    label: "Initial value",
+    type: "number",
+    required: true,
+  },
   { name: "balance", label: "Current balance", type: "number", required: true },
   { name: "active", label: "Active", type: "checkbox", default: true },
 ];
