@@ -29,7 +29,7 @@ export default function Modal({
       <div
         className={`relative bg-white border border-gray-200 rounded-xl shadow-lg w-full ${sizeClass} max-h-[90vh] flex flex-col`}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 shrink-0">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 shrink-0">
           <h3 className="text-sm font-semibold text-gray-900 min-w-0">
             {title}
           </h3>
@@ -40,9 +40,9 @@ export default function Modal({
             <X size={16} />
           </button>
         </div>
-        <div className="overflow-y-auto flex-1 p-5">{children}</div>
+        <div className="overflow-y-auto flex-1 px-4 py-3">{children}</div>
         {footer && (
-          <div className="px-5 py-3 border-t border-gray-200 shrink-0">
+          <div className="px-5 py-2.5 border-t border-gray-200 shrink-0">
             {footer}
           </div>
         )}

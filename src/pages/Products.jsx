@@ -21,17 +21,37 @@ import CsvDropzone from "../components/CsvDropzone";
 
 const CSV_COLUMNS = [
   "id",
+  "sku",
   "name",
   "category",
   "categoryGroup",
+  "brand",
+  "maker",
+  "country",
+  "region",
   "price",
+  "offerPrice",
+  "membersPrice",
+  "clearancePrice",
+  "packOf",
+  "packPrice",
+  "caseOf",
+  "casePrice",
   "image",
   "inStock",
   "stockQuantity",
+  "volumeMl",
   "abv",
-  "volume",
-  "manufacturer",
-  "origin",
+  "vintage",
+  "wineBody",
+  "sweetness",
+  "grapeVariety",
+  "closure",
+  "flavorNotes",
+  "aroma",
+  "ingredients",
+  "storageInstructions",
+  "foodRecommendations",
   "description",
   "verificationEmail",
   "verified",
@@ -61,19 +81,39 @@ async function importProductsCsv(file, existingProducts) {
       continue;
     }
     const body = {
+      sku: record.sku ?? "",
       name: record.name,
       category: record.category ?? "",
       categoryGroup: record.categorygroup || "wine",
+      brand: record.brand ?? "",
+      maker: record.maker ?? "",
+      country: record.country ?? "",
+      region: record.region ?? "",
       price: Number(record.price) || 0,
+      offerPrice: Number(record.offerprice) || 0,
+      membersPrice: Number(record.membersprice) || 0,
+      clearancePrice: Number(record.clearanceprice) || 0,
+      packOf: Number(record.packof) || 0,
+      packPrice: Number(record.packprice) || 0,
+      caseOf: Number(record.caseof) || 0,
+      casePrice: Number(record.caseprice) || 0,
       image: record.image ?? "",
       inStock: record.instock
         ? ["true", "1", "yes"].includes(record.instock.toLowerCase())
         : true,
       stockQuantity: Number(record.stockquantity) || 0,
+      volumeMl: Number(record.volumeml) || 0,
       abv: record.abv ?? "",
-      volume: record.volume ?? "",
-      manufacturer: record.manufacturer ?? "",
-      origin: record.origin ?? "",
+      vintage: record.vintage ?? "",
+      wineBody: record.winebody ?? "",
+      sweetness: record.sweetness ?? "",
+      grapeVariety: record.grapevariety ?? "",
+      closure: record.closure ?? "",
+      flavorNotes: record.flavornotes ?? "",
+      aroma: record.aroma ?? "",
+      ingredients: record.ingredients ?? "",
+      storageInstructions: record.storageinstructions ?? "",
+      foodRecommendations: record.foodrecommendations ?? "",
       description: record.description ?? "",
       verificationEmail: record.verificationemail ?? "",
       verified: record.verified
@@ -94,21 +134,146 @@ async function importProductsCsv(file, existingProducts) {
 }
 
 const EMPTY_FORM = {
+  sku: "",
   name: "",
   category: "",
   categoryGroup: "wine",
+  brand: "",
+  maker: "",
+  country: "",
+  region: "",
   price: "",
+  offerPrice: "",
+  membersPrice: "",
+  clearancePrice: "",
+  packOf: "",
+  packPrice: "",
+  caseOf: "",
+  casePrice: "",
   image: "",
   inStock: true,
   stockQuantity: "",
+  volumeMl: "",
   abv: "",
-  volume: "",
-  manufacturer: "",
-  origin: "",
+  vintage: "",
+  wineBody: "",
+  sweetness: "",
+  grapeVariety: "",
+  closure: "",
+  flavorNotes: "",
+  aroma: "",
+  ingredients: "",
+  storageInstructions: "",
+  foodRecommendations: "",
   description: "",
   verificationEmail: "",
   verified: false,
 };
+
+// Field definitions for the Add/Edit Product form, grouped into sections.
+// `key` maps to state in `editing`; number fields are stored as strings while editing.
+const PRODUCT_FORM_SECTIONS = [
+  {
+    title: "Basic Information",
+    fields: [
+      { key: "sku", label: "SKU" },
+      { key: "name", label: "Product Name", span: 2, required: true },
+      {
+        key: "category",
+        label: "Category",
+        required: true,
+        placeholder: "e.g. Red Wine · 750mL",
+      },
+      {
+        key: "categoryGroup",
+        label: "Category Group",
+        type: "select",
+        options: [
+          { value: "wine", label: "Wine" },
+          { value: "spirits", label: "Spirits" },
+          { value: "beer", label: "Beer" },
+          { value: "offers", label: "Offers" },
+        ],
+      },
+      { key: "brand", label: "Brand Name" },
+      { key: "maker", label: "Maker" },
+      { key: "country", label: "Country" },
+      { key: "region", label: "Region" },
+    ],
+  },
+  {
+    title: "Pricing",
+    fields: [
+      { key: "price", label: "Original Price", type: "number", required: true },
+      { key: "offerPrice", label: "Offer Price", type: "number" },
+      { key: "membersPrice", label: "Members Price", type: "number" },
+      { key: "clearancePrice", label: "Clearance Price", type: "number" },
+    ],
+  },
+  {
+    title: "Bulk Packaging",
+    fields: [
+      { key: "packOf", label: "Pack Of (units)", type: "number" },
+      { key: "packPrice", label: "Pack Price", type: "number" },
+      { key: "caseOf", label: "Case Of (units)", type: "number" },
+      { key: "casePrice", label: "Case Price", type: "number" },
+    ],
+  },
+  {
+    title: "Stock",
+    fields: [
+      { key: "stockQuantity", label: "Stock Quantity", type: "number" },
+      { key: "inStock", label: "In Stock", type: "checkbox" },
+    ],
+  },
+  {
+    title: "Product Details",
+    fields: [
+      { key: "volumeMl", label: "Volume (mL)", type: "number" },
+      { key: "abv", label: "Alcohol Volume (ABV)", placeholder: "e.g. 13.5%" },
+      { key: "vintage", label: "Vintage" },
+      { key: "wineBody", label: "Wine Body" },
+      { key: "sweetness", label: "Sweetness" },
+      { key: "grapeVariety", label: "Grape Variety" },
+      { key: "closure", label: "Closure" },
+    ],
+  },
+  {
+    title: "Description",
+    fields: [
+      { key: "description", label: "Description", type: "textarea", span: 2 },
+    ],
+  },
+  {
+    title: "Tasting Notes",
+    fields: [
+      { key: "flavorNotes", label: "Flavor Notes", type: "textarea", span: 2 },
+      { key: "aroma", label: "Aroma", type: "textarea", span: 2 },
+      { key: "ingredients", label: "Ingredients", type: "textarea", span: 2 },
+    ],
+  },
+  {
+    title: "Care & Serving",
+    fields: [
+      {
+        key: "storageInstructions",
+        label: "Storage Instructions",
+        type: "textarea",
+        span: 2,
+      },
+      {
+        key: "foodRecommendations",
+        label: "Food Recommendations",
+        type: "textarea",
+        span: 2,
+      },
+    ],
+  },
+];
+
+const NUMBER_FIELD_KEYS = PRODUCT_FORM_SECTIONS.flatMap((s) => s.fields)
+  .filter((f) => f.type === "number")
+  .map((f) => f.key);
 
 const PER_PAGE = 20;
 
@@ -205,22 +370,19 @@ export default function Products() {
 
   function openEdit(product) {
     saveMutation.reset();
+    const form = { ...EMPTY_FORM };
+    for (const key of Object.keys(EMPTY_FORM)) {
+      if (key === "inStock" || key === "verified") continue;
+      const value = product[key];
+      form[key] = NUMBER_FIELD_KEYS.includes(key)
+        ? String(value ?? "")
+        : value || "";
+    }
     setEditing({
+      ...form,
       isNew: false,
       id: product._id,
-      name: product.name,
-      category: product.category,
-      categoryGroup: product.categoryGroup,
-      price: String(product.price),
-      image: product.image || "",
       inStock: product.inStock,
-      stockQuantity: String(product.stockQuantity ?? 0),
-      abv: product.abv || "",
-      volume: product.volume || "",
-      manufacturer: product.manufacturer || "",
-      origin: product.origin || "",
-      description: product.description || "",
-      verificationEmail: product.verificationEmail || "",
       verified: Boolean(product.verified),
     });
   }
@@ -228,21 +390,16 @@ export default function Products() {
   function handleSubmit(e) {
     e.preventDefault();
     const body = {
-      name: editing.name.trim(),
-      category: editing.category.trim(),
       categoryGroup: editing.categoryGroup,
-      price: Number(editing.price),
-      image: editing.image.trim(),
       inStock: editing.inStock,
-      stockQuantity: Number(editing.stockQuantity) || 0,
-      abv: editing.abv.trim(),
-      volume: editing.volume.trim(),
-      manufacturer: editing.manufacturer.trim(),
-      origin: editing.origin.trim(),
-      description: editing.description.trim(),
-      verificationEmail: editing.verificationEmail.trim(),
       verified: editing.verified,
     };
+    for (const key of Object.keys(EMPTY_FORM)) {
+      if (["categoryGroup", "inStock", "verified"].includes(key)) continue;
+      body[key] = NUMBER_FIELD_KEYS.includes(key)
+        ? Number(editing[key]) || 0
+        : editing[key].trim();
+    }
     saveMutation.mutate({ id: editing.isNew ? null : editing.id, body });
   }
 
@@ -381,112 +538,37 @@ export default function Products() {
       {editing && (
         <Modal
           title={editing.isNew ? "Add Product" : "Edit Product"}
+          size="2xl"
           onClose={() => setEditing(null)}
+          footer={
+            <div className="space-y-2">
+              <FormError message={saveMutation.error?.message} />
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditing(null)}
+                  className="text-sm rounded-lg text-gray-600 border border-gray-300 px-4 py-2 hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  form="product-form"
+                  disabled={saveMutation.isPending}
+                  className="text-sm rounded-lg bg-primary text-white px-4 py-2 hover:opacity-90 disabled:opacity-60 transition-opacity shadow-sm"
+                >
+                  {saveMutation.isPending ? "Saving…" : "Save"}
+                </button>
+              </div>
+            </div>
+          }
         >
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <input
-                required
-                placeholder="Name"
-                className={`${inputCls} col-span-2`}
-                value={editing.name}
-                onChange={(e) =>
-                  setEditing({ ...editing, name: e.target.value })
-                }
-              />
-              <input
-                required
-                placeholder="Category (e.g. Red Wine · 750mL)"
-                className={inputCls}
-                value={editing.category}
-                onChange={(e) =>
-                  setEditing({ ...editing, category: e.target.value })
-                }
-              />
-              <select
-                className={inputCls}
-                value={editing.categoryGroup}
-                onChange={(e) =>
-                  setEditing({ ...editing, categoryGroup: e.target.value })
-                }
-              >
-                <option value="wine">Wine</option>
-                <option value="spirits">Spirits</option>
-                <option value="beer">Beer</option>
-                <option value="offers">Offers</option>
-              </select>
-              <input
-                required
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="Price"
-                className={inputCls}
-                value={editing.price}
-                onChange={(e) =>
-                  setEditing({ ...editing, price: e.target.value })
-                }
-              />
-              <input
-                type="number"
-                min="0"
-                placeholder="Stock quantity"
-                className={inputCls}
-                value={editing.stockQuantity}
-                onChange={(e) =>
-                  setEditing({ ...editing, stockQuantity: e.target.value })
-                }
-              />
-              <input
-                placeholder="Image URL"
-                className={`${inputCls} col-span-2`}
-                value={editing.image}
-                onChange={(e) =>
-                  setEditing({ ...editing, image: e.target.value })
-                }
-              />
-              <input
-                placeholder="ABV (e.g. 13.5%)"
-                className={inputCls}
-                value={editing.abv}
-                onChange={(e) =>
-                  setEditing({ ...editing, abv: e.target.value })
-                }
-              />
-              <input
-                placeholder="Volume (e.g. 750mL)"
-                className={inputCls}
-                value={editing.volume}
-                onChange={(e) =>
-                  setEditing({ ...editing, volume: e.target.value })
-                }
-              />
-              <input
-                placeholder="Manufacturer"
-                className={inputCls}
-                value={editing.manufacturer}
-                onChange={(e) =>
-                  setEditing({ ...editing, manufacturer: e.target.value })
-                }
-              />
-              <input
-                placeholder="Origin"
-                className={inputCls}
-                value={editing.origin}
-                onChange={(e) =>
-                  setEditing({ ...editing, origin: e.target.value })
-                }
-              />
-              <textarea
-                placeholder="Description"
-                className={`${inputCls} col-span-2`}
-                rows={3}
-                value={editing.description}
-                onChange={(e) =>
-                  setEditing({ ...editing, description: e.target.value })
-                }
-              />
-              <div className="col-span-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5">
+          <form id="product-form" onSubmit={handleSubmit} className="space-y-3">
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                Verification
+              </h4>
+              <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5">
                 <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                   <input
                     type="checkbox"
@@ -525,36 +607,116 @@ export default function Products() {
                     : `Will be recorded as verified by ${user.email}`}
                 </p>
               </div>
-              <label className="col-span-2 flex items-center gap-2 text-sm text-gray-700">
+            </div>
+
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                Image
+              </h4>
+              <label className="block text-xs text-gray-500 space-y-0.5">
+                <span>Image URL</span>
                 <input
-                  type="checkbox"
-                  checked={editing.inStock}
+                  placeholder="https://…"
+                  className={inputCls}
+                  value={editing.image}
                   onChange={(e) =>
-                    setEditing({ ...editing, inStock: e.target.checked })
+                    setEditing({ ...editing, image: e.target.value })
                   }
                 />
-                In stock
               </label>
             </div>
 
-            <FormError message={saveMutation.error?.message} />
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setEditing(null)}
-                className="text-sm rounded-lg text-gray-600 border border-gray-300 px-4 py-2 hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={saveMutation.isPending}
-                className="text-sm rounded-lg bg-primary text-white px-4 py-2 hover:opacity-90 disabled:opacity-60 transition-opacity shadow-sm"
-              >
-                {saveMutation.isPending ? "Saving…" : "Save"}
-              </button>
-            </div>
+            {PRODUCT_FORM_SECTIONS.map((section) => (
+              <div key={section.title}>
+                <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                  {section.title}
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {section.fields.map((field) => (
+                    <label
+                      key={field.key}
+                      className={`text-xs text-gray-500 space-y-0.5 ${
+                        field.span === 2 ? "col-span-2" : ""
+                      } ${field.type === "checkbox" ? "flex items-center gap-2 text-sm text-gray-700 pt-3.5" : ""}`}
+                    >
+                      {field.type === "checkbox" ? (
+                        <>
+                          <input
+                            type="checkbox"
+                            checked={editing[field.key]}
+                            onChange={(e) =>
+                              setEditing({
+                                ...editing,
+                                [field.key]: e.target.checked,
+                              })
+                            }
+                          />
+                          {field.label}
+                        </>
+                      ) : (
+                        <>
+                          <span>
+                            {field.label}
+                            {field.required && (
+                              <span className="text-primary"> *</span>
+                            )}
+                          </span>
+                          {field.type === "select" ? (
+                            <select
+                              className={inputCls}
+                              value={editing[field.key]}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  [field.key]: e.target.value,
+                                })
+                              }
+                            >
+                              {field.options.map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </option>
+                              ))}
+                            </select>
+                          ) : field.type === "textarea" ? (
+                            <textarea
+                              rows={3}
+                              placeholder={field.placeholder}
+                              className={inputCls}
+                              value={editing[field.key]}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  [field.key]: e.target.value,
+                                })
+                              }
+                            />
+                          ) : (
+                            <input
+                              required={field.required}
+                              type={field.type === "number" ? "number" : "text"}
+                              step={
+                                field.type === "number" ? "0.01" : undefined
+                              }
+                              min={field.type === "number" ? "0" : undefined}
+                              placeholder={field.placeholder}
+                              className={inputCls}
+                              value={editing[field.key]}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  [field.key]: e.target.value,
+                                })
+                              }
+                            />
+                          )}
+                        </>
+                      )}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
           </form>
         </Modal>
       )}
@@ -577,9 +739,8 @@ export default function Products() {
       {importing && (
         <Modal title="Import Products CSV" onClose={() => setImporting(false)}>
           <p className="text-sm text-gray-500 mb-3">
-            Columns: id (optional, updates existing product), name, category,
-            categoryGroup, price, image, inStock, stockQuantity, abv, volume,
-            manufacturer, origin, description, verificationEmail, verified.
+            Columns: id (optional, updates existing product), then any of:{" "}
+            {CSV_COLUMNS.filter((c) => c !== "id").join(", ")}.
           </p>
           <CsvDropzone
             label="Click to select CSV file"
