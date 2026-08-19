@@ -10,6 +10,7 @@ import {
 } from "../lib/mockProducts";
 import { inputCls } from "../lib/ui";
 import { parseCsvRecords, toCsv, downloadCsv } from "../lib/csv";
+import { useAuth } from "../context/AuthContext";
 import SearchInput from "../components/SearchInput";
 import PaginationBar from "../components/PaginationBar";
 import TableStateRow from "../components/TableStateRow";
@@ -112,6 +113,7 @@ const EMPTY_FORM = {
 const PER_PAGE = 20;
 
 export default function Products() {
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState(null); // product object, or {} for new
@@ -152,6 +154,30 @@ export default function Products() {
       setDeleting(null);
     },
   });
+
+  const verifyMutation = useMutation({
+    mutationFn: ({ id, verified }) =>
+      updateProduct(id, {
+        verified,
+        verificationEmail: verified ? user.email : "",
+      }),
+    onSuccess: (updated) => {
+      invalidate();
+      setEditing((cur) =>
+        cur && !cur.isNew && cur.id === updated._id
+          ? {
+              ...cur,
+              verified: updated.verified,
+              verificationEmail: updated.verificationEmail,
+            }
+          : cur,
+      );
+    },
+  });
+
+  function toggleVerified(product) {
+    verifyMutation.mutate({ id: product._id, verified: !product.verified });
+  }
 
   const importMutation = useMutation({
     mutationFn: async (file) => {
@@ -300,16 +326,28 @@ export default function Products() {
                   </span>
                 </td>
                 <td className="px-4 py-2.5">
-                  <span
-                    className={`px-2 py-0.5 text-xs ${
+                  <label
+                    className="flex items-center gap-1.5 text-xs cursor-pointer"
+                    title={
                       p.verified
-                        ? "bg-green-50 text-green-700"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                    title={p.verificationEmail || ""}
+                        ? `Verified by ${p.verificationEmail}`
+                        : `Click to verify as ${user.email}`
+                    }
                   >
-                    {p.verified ? "Verified" : "Unverified"}
-                  </span>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(p.verified)}
+                      disabled={verifyMutation.isPending}
+                      onChange={() => toggleVerified(p)}
+                    />
+                    <span
+                      className={
+                        p.verified ? "text-green-700" : "text-gray-500"
+                      }
+                    >
+                      {p.verified ? "Verified" : "Unverified"}
+                    </span>
+                  </label>
                 </td>
                 <td className="px-4 py-2.5">
                   <div className="flex justify-end gap-2">
@@ -449,26 +487,37 @@ export default function Products() {
                 }
               />
               <input
-                type="email"
+                disabled
                 placeholder="Verification email"
-                className={inputCls}
-                value={editing.verificationEmail}
-                onChange={(e) =>
-                  setEditing({
-                    ...editing,
-                    verificationEmail: e.target.value,
-                  })
+                className={`${inputCls} bg-gray-50 text-gray-500`}
+                value={
+                  editing.verified
+                    ? editing.verificationEmail
+                    : `Will verify as ${user.email}`
                 }
               />
               <label className="flex items-center gap-2 text-sm text-gray-700">
                 <input
                   type="checkbox"
                   checked={editing.verified}
-                  onChange={(e) =>
-                    setEditing({ ...editing, verified: e.target.checked })
-                  }
+                  disabled={!editing.isNew && verifyMutation.isPending}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    if (editing.isNew) {
+                      setEditing({
+                        ...editing,
+                        verified: checked,
+                        verificationEmail: checked ? user.email : "",
+                      });
+                    } else {
+                      verifyMutation.mutate({
+                        id: editing.id,
+                        verified: checked,
+                      });
+                    }
+                  }}
                 />
-                Verified via email
+                Verified by {user.email}
               </label>
               <label className="col-span-2 flex items-center gap-2 text-sm text-gray-700">
                 <input
