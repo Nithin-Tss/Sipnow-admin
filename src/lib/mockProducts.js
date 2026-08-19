@@ -16,6 +16,8 @@ const SEED_PRODUCTS = [
     origin: "Bordeaux, France",
     description:
       "A rich, full-bodied red wine with notes of blackcurrant and cedar.",
+    verificationEmail: "supplier@chateaumargaux.com",
+    verified: true,
   },
   {
     _id: "seed-2",
@@ -31,6 +33,8 @@ const SEED_PRODUCTS = [
     manufacturer: "Grey Goose",
     origin: "France",
     description: "Premium French vodka distilled from single-origin wheat.",
+    verificationEmail: "trade@greygoose.com",
+    verified: true,
   },
   {
     _id: "seed-3",
@@ -46,6 +50,8 @@ const SEED_PRODUCTS = [
     manufacturer: "Guinness",
     origin: "Ireland",
     description: "The iconic Irish dry stout with a smooth, creamy head.",
+    verificationEmail: "",
+    verified: false,
   },
   {
     _id: "seed-4",
@@ -61,6 +67,8 @@ const SEED_PRODUCTS = [
     manufacturer: "Mixed",
     origin: "",
     description: "Limited-time bundle offer on selected craft beers.",
+    verificationEmail: "",
+    verified: false,
   },
 ];
 
