@@ -18,6 +18,7 @@ import Coupons from "./pages/Coupons";
 import GiftCards from "./pages/GiftCards";
 import Compare from "./pages/Compare";
 import Stores from "./pages/Stores";
+import Brands from "./pages/Brands";
 
 function RequireAuth({ children }) {
   const { user } = useAuth();
@@ -41,6 +42,7 @@ export default function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="products" element={<Products />} />
+            <Route path="brands" element={<Brands />} />
             <Route path="catalogue" element={<Catalogue />} />
             <Route path="offers" element={<Offers />} />
             <Route path="promotions" element={<Promotions />} />
