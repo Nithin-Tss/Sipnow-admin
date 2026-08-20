@@ -192,6 +192,7 @@ const PRODUCT_FORM_SECTIONS = [
           { value: "wine", label: "Wine" },
           { value: "spirits", label: "Spirits" },
           { value: "beer", label: "Beer" },
+          { value: "premix", label: "Premix" },
           { value: "offers", label: "Offers" },
         ],
       },
