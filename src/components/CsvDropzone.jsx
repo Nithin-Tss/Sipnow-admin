@@ -5,7 +5,7 @@ export default function CsvDropzone({
   onFileSelect,
   disabled,
   label = "Click to select CSV file",
-  disabledLabel = "Select a supplier first",
+  disabledLabel = "Uploading…",
 }) {
   const inputRef = useRef(null);
 
