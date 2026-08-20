@@ -85,8 +85,7 @@ const columns = [
   {
     key: "minPurchase",
     label: "Min. Purchase",
-    render: (coupon) =>
-      `$${Number(coupon.minPurchase || 0).toFixed(2)}`,
+    render: (coupon) => `$${Number(coupon.minPurchase || 0).toFixed(2)}`,
   },
 
   {
@@ -102,8 +101,7 @@ const columns = [
     key: "usage",
     label: "Usage",
     render: (coupon) =>
-      coupon.usageLimit === null ||
-      coupon.usageLimit === undefined
+      coupon.usageLimit === null || coupon.usageLimit === undefined
         ? `${coupon.usedCount || 0} / Unlimited`
         : `${coupon.usedCount || 0} / ${coupon.usageLimit}`,
   },

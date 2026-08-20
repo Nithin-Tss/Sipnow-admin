@@ -7,6 +7,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  verifyProduct,
 } from "../lib/productsApi";
 import { inputCls } from "../lib/ui";
 import { parseCsvRecords, toCsv, downloadCsv } from "../lib/csv";
@@ -335,11 +336,7 @@ export default function Products() {
   });
 
   const verifyMutation = useMutation({
-    mutationFn: ({ id, verified }) =>
-      updateProduct(id, {
-        verified,
-        verificationEmail: verified ? user.email : "",
-      }),
+    mutationFn: ({ id, verified }) => verifyProduct(id, verified),
     onSuccess: (updated) => {
       invalidate();
       setEditing((cur) =>
