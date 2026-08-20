@@ -19,6 +19,8 @@ import FormError from "../components/FormError";
 import DeleteModalActions from "../components/DeleteModalActions";
 import CsvDropzone from "../components/CsvDropzone";
 
+const CATEGORY_GROUPS = ["wine", "spirits", "beer", "premix", "offers"];
+
 const CSV_COLUMNS = [
   "id",
   "sku",
@@ -84,7 +86,11 @@ async function importProductsCsv(file, existingProducts) {
       sku: record.sku ?? "",
       name: record.name,
       category: record.category ?? "",
-      categoryGroup: record.categorygroup || "wine",
+      categoryGroup: CATEGORY_GROUPS.includes(
+        record.categorygroup?.toLowerCase(),
+      )
+        ? record.categorygroup.toLowerCase()
+        : "wine",
       brand: record.brand ?? "",
       maker: record.maker ?? "",
       country: record.country ?? "",
