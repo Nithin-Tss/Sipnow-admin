@@ -14,6 +14,7 @@ const PER_PAGE = 20;
 function emptyFormFrom(fields) {
   const form = {};
   for (const field of fields) {
+    if (field.type === "section") continue;
     form[field.name] =
       field.default ?? (field.type === "checkbox" ? false : "");
   }
@@ -23,6 +24,7 @@ function emptyFormFrom(fields) {
 function formToBody(editing, fields) {
   const body = {};
   for (const field of fields) {
+    if (field.type === "section") continue;
     const value = editing[field.name];
     if (field.type === "number") body[field.name] = Number(value) || 0;
     else if (field.type === "checkbox") body[field.name] = Boolean(value);
@@ -91,6 +93,7 @@ export default function CrudPage({
     saveMutation.reset();
     const form = { isNew: false, id: item._id };
     for (const field of fields) {
+      if (field.type === "section") continue;
       const value = item[field.name];
       form[field.name] =
         field.type === "checkbox" ? Boolean(value) : (value ?? "");
@@ -206,6 +209,16 @@ export default function CrudPage({
             <div className="grid grid-cols-2 gap-3">
               {fields.map((field) => {
                 const colClass = field.colSpan === 2 ? "col-span-2" : "";
+                if (field.type === "section") {
+                  return (
+                    <div
+                      key={field.name}
+                      className="col-span-2 border-b border-gray-200 pb-1 pt-3 text-xs font-semibold uppercase tracking-wider text-gray-500 first:pt-0"
+                    >
+                      {field.label}
+                    </div>
+                  );
+                }
                 if (field.type === "select") {
                   return (
                     <select

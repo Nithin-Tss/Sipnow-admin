@@ -3,6 +3,17 @@ import * as brandsApi from "../lib/brandsApi";
 
 const fields = [
   {
+    name: "section-details",
+    label: "Brand Details",
+    type: "section",
+  },
+  {
+    name: "verified",
+    label: "Verified",
+    type: "checkbox",
+    default: false,
+  },
+  {
     name: "name",
     label: "Brand Name",
     required: true,
@@ -16,7 +27,38 @@ const fields = [
   },
   {
     name: "logo",
-    label: "Logo",
+    label: "Logo Image URL",
+    placeholder: "https://...",
+    colSpan: 2,
+  },
+  {
+    name: "section-content",
+    label: "Frontend Brand Page",
+    type: "section",
+  },
+  {
+    name: "bannerImage",
+    label: "Brand Banner Image URL",
+    placeholder: "https://...",
+    colSpan: 2,
+  },
+  {
+    name: "bestSellingDescription",
+    label: "Best Selling Section Description",
+    type: "textarea",
+    colSpan: 2,
+  },
+  {
+    name: "bestRatedDescription",
+    label: "Best Rated Section Description",
+    type: "textarea",
+    colSpan: 2,
+  },
+  {
+    name: "collectionDescription",
+    label: "Collection Section Description",
+    type: "textarea",
+    colSpan: 2,
   },
   {
     name: "isActive",
@@ -52,6 +94,29 @@ const columns = [
       >
         {brand.isActive ? "Active" : "Inactive"}
       </span>
+    ),
+  },
+  {
+    key: "verified",
+    label: "Verification",
+    render: (brand) => (
+      <div className="flex flex-col">
+        <span
+          className={`px-2 py-0.5 rounded-full text-xs font-medium w-fit ${
+            brand.verified
+              ? "bg-green-50 text-green-700"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {brand.verified ? "Verified" : "Unverified"}
+        </span>
+
+        {brand.verified && brand.verificationEmail && (
+          <span className="text-[11px] text-gray-400 mt-1">
+            {brand.verificationEmail}
+          </span>
+        )}
+      </div>
     ),
   },
 ];
