@@ -20,6 +20,7 @@ import DeleteModalActions from "../components/DeleteModalActions";
 import CsvDropzone from "../components/CsvDropzone";
 
 const CATEGORY_GROUPS = ["wine", "spirits", "beer", "premix", "offers"];
+const UNCATEGORIZED_CATEGORY = "Uncategorized";
 
 const CSV_COLUMNS = [
   "id",
@@ -82,10 +83,16 @@ async function importProductsCsv(file, existingProducts) {
       skipped++;
       continue;
     }
+    const existingProduct = record.id ? byId.get(record.id) : null;
+    const category =
+      record.category?.trim() ||
+      record.categories?.trim() ||
+      existingProduct?.category ||
+      UNCATEGORIZED_CATEGORY;
     const body = {
       sku: record.sku ?? "",
       name: record.name,
-      category: record.category ?? "",
+      category,
       categoryGroup: CATEGORY_GROUPS.includes(
         record.categorygroup?.toLowerCase(),
       )
@@ -127,7 +134,7 @@ async function importProductsCsv(file, existingProducts) {
         : false,
     };
 
-    if (record.id && byId.has(record.id)) {
+    if (existingProduct) {
       await updateProduct(record.id, body);
       updated++;
     } else {
