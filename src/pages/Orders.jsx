@@ -36,7 +36,12 @@ const columns = [
     label: "Total",
     render: (o) => `$${Number(o.total).toFixed(2)}`,
   },
-  { key: "placedAt", label: "Placed" },
+  {
+    key: "fulfilment",
+    label: "Mode",
+    render: (order) =>
+      order.fulfilment === "store-pickup" ? "Pickup" : "Delivery",
+  },
   {
     key: "status",
     label: "Status",
