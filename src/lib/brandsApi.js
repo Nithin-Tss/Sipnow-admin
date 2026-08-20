@@ -1,10 +1,6 @@
 import { apiFetch } from "./apiClient";
 
-export async function fetchBrands({
-  search = "",
-  page = 1,
-  perPage = 20,
-}) {
+export async function fetchBrands({ search = "", page = 1, perPage = 20 }) {
   const params = new URLSearchParams();
 
   params.set("all", "true");
@@ -41,14 +37,8 @@ export async function createBrand(body) {
       bestSellingDescription: body.bestSellingDescription || "",
       bestRatedDescription: body.bestRatedDescription || "",
       collectionDescription: body.collectionDescription || "",
-      isActive:
-        body.isActive !== undefined
-          ? Boolean(body.isActive)
-          : true,
-      verified:
-        body.verified !== undefined
-          ? Boolean(body.verified)
-          : false,
+      isActive: body.isActive !== undefined ? Boolean(body.isActive) : true,
+      verified: body.verified !== undefined ? Boolean(body.verified) : false,
     }),
   });
 }
@@ -64,14 +54,8 @@ export async function updateBrand(id, body) {
       bestSellingDescription: body.bestSellingDescription || "",
       bestRatedDescription: body.bestRatedDescription || "",
       collectionDescription: body.collectionDescription || "",
-      isActive:
-        body.isActive !== undefined
-          ? Boolean(body.isActive)
-          : true,
-      verified:
-        body.verified !== undefined
-          ? Boolean(body.verified)
-          : false,
+      isActive: body.isActive !== undefined ? Boolean(body.isActive) : true,
+      verified: body.verified !== undefined ? Boolean(body.verified) : false,
     }),
   });
 }

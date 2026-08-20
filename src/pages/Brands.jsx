@@ -112,12 +112,7 @@ export default function Brands() {
 
   const queryClient = useQueryClient();
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["brands", search, page],
     queryFn: () =>
       fetchBrands({
@@ -190,12 +185,9 @@ export default function Brands() {
       description: editing.description.trim(),
       logo: editing.logo.trim(),
       bannerImage: editing.bannerImage.trim(),
-      bestSellingDescription:
-        editing.bestSellingDescription.trim(),
-      bestRatedDescription:
-        editing.bestRatedDescription.trim(),
-      collectionDescription:
-        editing.collectionDescription.trim(),
+      bestSellingDescription: editing.bestSellingDescription.trim(),
+      bestRatedDescription: editing.bestRatedDescription.trim(),
+      collectionDescription: editing.collectionDescription.trim(),
       isActive: editing.isActive,
       verified: editing.verified,
       verificationEmail: editing.verified
@@ -213,9 +205,7 @@ export default function Brands() {
     <div className="p-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Brands
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900">Brands</h2>
 
         <div className="flex items-center gap-2">
           <button
@@ -245,34 +235,20 @@ export default function Brands() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50/60 text-left text-xs text-gray-500">
-              <th className="px-4 py-2.5 font-medium">
-                Brand Name
-              </th>
+              <th className="px-4 py-2.5 font-medium">Brand Name</th>
 
-              <th className="px-4 py-2.5 font-medium">
-                Description
-              </th>
+              <th className="px-4 py-2.5 font-medium">Description</th>
 
-              <th className="px-4 py-2.5 font-medium">
-                Status
-              </th>
+              <th className="px-4 py-2.5 font-medium">Status</th>
 
-              <th className="px-4 py-2.5 font-medium">
-                Verification
-              </th>
+              <th className="px-4 py-2.5 font-medium">Verification</th>
 
-              <th className="px-4 py-2.5 font-medium text-right">
-                Actions
-              </th>
+              <th className="px-4 py-2.5 font-medium text-right">Actions</th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-gray-100">
-            {isLoading && (
-              <TableStateRow colSpan={5}>
-                Loading…
-              </TableStateRow>
-            )}
+            {isLoading && <TableStateRow colSpan={5}>Loading…</TableStateRow>}
 
             {isError && (
               <TableStateRow colSpan={5}>
@@ -280,22 +256,16 @@ export default function Brands() {
               </TableStateRow>
             )}
 
-            {!isLoading &&
-              !isError &&
-              items.length === 0 && (
-                <TableStateRow colSpan={5}>
-                  No brands found.
-                </TableStateRow>
-              )}
+            {!isLoading && !isError && items.length === 0 && (
+              <TableStateRow colSpan={5}>No brands found.</TableStateRow>
+            )}
 
             {items.map((brand) => (
               <tr
                 key={brand._id}
                 className="hover:bg-gray-50 transition-colors"
               >
-                <td className="px-4 py-2.5 text-gray-900">
-                  {brand.name}
-                </td>
+                <td className="px-4 py-2.5 text-gray-900">{brand.name}</td>
 
                 <td className="px-4 py-2.5 text-gray-600">
                   {brand.description}
@@ -309,9 +279,7 @@ export default function Brands() {
                         : "bg-red-50 text-red-700"
                     }`}
                   >
-                    {brand.isActive
-                      ? "Active"
-                      : "Inactive"}
+                    {brand.isActive ? "Active" : "Inactive"}
                   </span>
                 </td>
 
@@ -324,17 +292,14 @@ export default function Brands() {
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      {brand.verified
-                        ? "Verified"
-                        : "Unverified"}
+                      {brand.verified ? "Verified" : "Unverified"}
                     </span>
 
-                    {brand.verified &&
-                      brand.verificationEmail && (
-                        <span className="text-[11px] text-gray-400 mt-1">
-                          {brand.verificationEmail}
-                        </span>
-                      )}
+                    {brand.verified && brand.verificationEmail && (
+                      <span className="text-[11px] text-gray-400 mt-1">
+                        {brand.verificationEmail}
+                      </span>
+                    )}
                   </div>
                 </td>
 
@@ -372,18 +337,12 @@ export default function Brands() {
       {/* Add / Edit Brand Modal */}
       {editing && (
         <Modal
-          title={
-            editing.isNew
-              ? "Add Brand"
-              : "Edit Brand"
-          }
+          title={editing.isNew ? "Add Brand" : "Edit Brand"}
           size="2xl"
           onClose={() => setEditing(null)}
           footer={
             <div className="space-y-2">
-              <FormError
-                message={saveMutation.error?.message}
-              />
+              <FormError message={saveMutation.error?.message} />
 
               <div className="flex justify-end gap-2">
                 <button
@@ -400,19 +359,13 @@ export default function Brands() {
                   disabled={saveMutation.isPending}
                   className="text-sm rounded-lg bg-primary text-white px-4 py-2 hover:opacity-90 disabled:opacity-60 transition-opacity shadow-sm"
                 >
-                  {saveMutation.isPending
-                    ? "Saving…"
-                    : "Save"}
+                  {saveMutation.isPending ? "Saving…" : "Save"}
                 </button>
               </div>
             </div>
           }
         >
-          <form
-            id="brand-form"
-            onSubmit={handleSubmit}
-            className="space-y-3"
-          >
+          <form id="brand-form" onSubmit={handleSubmit} className="space-y-3">
             {/* Verification */}
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
@@ -425,23 +378,17 @@ export default function Brands() {
                     type="checkbox"
                     checked={editing.verified}
                     onChange={(e) => {
-                      const checked =
-                        e.target.checked;
+                      const checked = e.target.checked;
 
                       setEditing({
                         ...editing,
                         verified: checked,
-                        verificationEmail:
-                          checked
-                            ? user?.email || ""
-                            : "",
+                        verificationEmail: checked ? user?.email || "" : "",
                       });
                     }}
                   />
 
-                  <span className="font-medium">
-                    Verified
-                  </span>
+                  <span className="font-medium">Verified</span>
 
                   <span
                     className={`px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -450,154 +397,108 @@ export default function Brands() {
                         : "bg-gray-200 text-gray-600"
                     }`}
                   >
-                    {editing.verified
-                      ? "Verified"
-                      : "Unverified"}
+                    {editing.verified ? "Verified" : "Unverified"}
                   </span>
                 </label>
 
                 <p className="mt-1 pl-6 text-xs text-gray-500">
                   {editing.verified
                     ? `Verified by ${
-                        editing.verificationEmail ||
-                        user?.email ||
-                        ""
+                        editing.verificationEmail || user?.email || ""
                       }`
-                    : `Will be recorded as verified by ${
-                        user?.email || ""
-                      }`}
+                    : `Will be recorded as verified by ${user?.email || ""}`}
                 </p>
               </div>
             </div>
 
             {/* Brand Form Sections */}
-            {BRAND_FORM_SECTIONS.map(
-              (section) => (
-                <div key={section.title}>
-                  <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
-                    {section.title}
-                  </h4>
+            {BRAND_FORM_SECTIONS.map((section) => (
+              <div key={section.title}>
+                <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                  {section.title}
+                </h4>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    {section.fields.map(
-                      (field) => (
-                        <label
-                          key={field.key}
-                          className={`text-xs text-gray-500 space-y-0.5 ${
-                            field.span === 2
-                              ? "col-span-2"
-                              : ""
-                          } ${
-                            field.type ===
-                            "checkbox"
-                              ? "flex items-center gap-2 text-sm text-gray-700 pt-3.5"
-                              : ""
-                          }`}
-                        >
-                          {field.type ===
-                          "checkbox" ? (
-                            <>
-                              <input
-                                type="checkbox"
-                                checked={
-                                  editing[
-                                    field.key
-                                  ]
-                                }
-                                onChange={(e) =>
-                                  setEditing({
-                                    ...editing,
-                                    [field.key]:
-                                      e.target
-                                        .checked,
-                                  })
-                                }
-                              />
+                <div className="grid grid-cols-2 gap-2">
+                  {section.fields.map((field) => (
+                    <label
+                      key={field.key}
+                      className={`text-xs text-gray-500 space-y-0.5 ${
+                        field.span === 2 ? "col-span-2" : ""
+                      } ${
+                        field.type === "checkbox"
+                          ? "flex items-center gap-2 text-sm text-gray-700 pt-3.5"
+                          : ""
+                      }`}
+                    >
+                      {field.type === "checkbox" ? (
+                        <>
+                          <input
+                            type="checkbox"
+                            checked={editing[field.key]}
+                            onChange={(e) =>
+                              setEditing({
+                                ...editing,
+                                [field.key]: e.target.checked,
+                              })
+                            }
+                          />
 
-                              {field.label}
-                            </>
+                          {field.label}
+                        </>
+                      ) : (
+                        <>
+                          <span>
+                            {field.label}
+
+                            {field.required && (
+                              <span className="text-primary"> *</span>
+                            )}
+                          </span>
+
+                          {field.type === "textarea" ? (
+                            <textarea
+                              rows={3}
+                              placeholder={field.placeholder}
+                              className={inputCls}
+                              value={editing[field.key]}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  [field.key]: e.target.value,
+                                })
+                              }
+                            />
                           ) : (
-                            <>
-                              <span>
-                                {field.label}
-
-                                {field.required && (
-                                  <span className="text-primary">
-                                    {" "}
-                                    *
-                                  </span>
-                                )}
-                              </span>
-
-                              {field.type ===
-                              "textarea" ? (
-                                <textarea
-                                  rows={3}
-                                  placeholder={
-                                    field.placeholder
-                                  }
-                                  className={inputCls}
-                                  value={
-                                    editing[
-                                      field.key
-                                    ]
-                                  }
-                                  onChange={(e) =>
-                                    setEditing({
-                                      ...editing,
-                                      [field.key]:
-                                        e.target
-                                          .value,
-                                    })
-                                  }
-                                />
-                              ) : (
-                                <input
-                                  required={
-                                    field.required
-                                  }
-                                  type="text"
-                                  placeholder={
-                                    field.placeholder
-                                  }
-                                  className={inputCls}
-                                  value={
-                                    editing[
-                                      field.key
-                                    ]
-                                  }
-                                  onChange={(e) =>
-                                    setEditing({
-                                      ...editing,
-                                      [field.key]:
-                                        e.target
-                                          .value,
-                                    })
-                                  }
-                                />
-                              )}
-                            </>
+                            <input
+                              required={field.required}
+                              type="text"
+                              placeholder={field.placeholder}
+                              className={inputCls}
+                              value={editing[field.key]}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  [field.key]: e.target.value,
+                                })
+                              }
+                            />
                           )}
-                        </label>
-                      )
-                    )}
-                  </div>
+                        </>
+                      )}
+                    </label>
+                  ))}
                 </div>
-              )
-            )}
+              </div>
+            ))}
           </form>
         </Modal>
       )}
 
       {/* Delete Brand Modal */}
       {deleting && (
-        <Modal
-          title="Delete Brand"
-          onClose={() => setDeleting(null)}
-        >
+        <Modal title="Delete Brand" onClose={() => setDeleting(null)}>
           <p className="text-sm text-gray-600">
-            Are you sure you want to delete{" "}
-            <strong>{deleting.name}</strong>?
+            Are you sure you want to delete <strong>{deleting.name}</strong>?
             This cannot be undone.
           </p>
 
@@ -605,9 +506,7 @@ export default function Brands() {
             formErr={deleteMutation.error?.message}
             isPending={deleteMutation.isPending}
             onCancel={() => setDeleting(null)}
-            onDelete={() =>
-              deleteMutation.mutate(deleting._id)
-            }
+            onDelete={() => deleteMutation.mutate(deleting._id)}
           />
         </Modal>
       )}
