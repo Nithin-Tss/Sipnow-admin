@@ -132,7 +132,11 @@ export default function InStorePromotions() {
       return;
     }
 
-    if (editing.startDate && editing.endDate && editing.startDate > editing.endDate) {
+    if (
+      editing.startDate &&
+      editing.endDate &&
+      editing.startDate > editing.endDate
+    ) {
       setFormError("End date cannot be earlier than start date.");
       return;
     }
@@ -141,11 +145,14 @@ export default function InStorePromotions() {
       const duplicate = promotions.find(
         (p) =>
           p._id !== editing.id &&
-          (p.product?._id === editing.productId || p.product === editing.productId) &&
-          p.isActive
+          (p.product?._id === editing.productId ||
+            p.product === editing.productId) &&
+          p.isActive,
       );
       if (duplicate) {
-        setFormError("This product is already added as an active In-Store Promotion.");
+        setFormError(
+          "This product is already added as an active In-Store Promotion.",
+        );
         return;
       }
     }
@@ -168,9 +175,12 @@ export default function InStorePromotions() {
     <div className="p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">In-Store Promotions</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            In-Store Promotions
+          </h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            Manage product offers and promotions displayed in-store to customers.
+            Manage product offers and promotions displayed in-store to
+            customers.
           </p>
         </div>
         <button
@@ -206,11 +216,7 @@ export default function InStorePromotions() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {isLoading && (
-              <TableStateRow colSpan={7}>
-                Loading…
-              </TableStateRow>
-            )}
+            {isLoading && <TableStateRow colSpan={7}>Loading…</TableStateRow>}
             {isError && (
               <TableStateRow colSpan={7}>
                 Failed to load in-store promotions: {error.message}
@@ -239,16 +245,22 @@ export default function InStorePromotions() {
                         </div>
                       )}
                       <div>
-                        <div className="font-medium text-gray-900">{p.name || "Unknown Product"}</div>
+                        <div className="font-medium text-gray-900">
+                          {p.name || "Unknown Product"}
+                        </div>
                         {p.category && (
-                          <div className="text-[11px] text-gray-400">{p.category}</div>
+                          <div className="text-[11px] text-gray-400">
+                            {p.category}
+                          </div>
                         )}
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-2.5 text-gray-600">{p.sku || "—"}</td>
                   <td className="px-4 py-2.5 text-gray-600">
-                    {p.price !== undefined ? `$${Number(p.price).toFixed(2)}` : "—"}
+                    {p.price !== undefined
+                      ? `$${Number(p.price).toFixed(2)}`
+                      : "—"}
                   </td>
                   <td className="px-4 py-2.5 text-gray-600">
                     {item.discountType === "percentage" && (
@@ -313,7 +325,9 @@ export default function InStorePromotions() {
 
       {editing && (
         <Modal
-          title={editing.isNew ? "Add In-Store Promotion" : "Edit In-Store Promotion"}
+          title={
+            editing.isNew ? "Add In-Store Promotion" : "Edit In-Store Promotion"
+          }
           onClose={() => setEditing(null)}
         >
           <form onSubmit={handleSubmit} className="space-y-3">
@@ -326,13 +340,16 @@ export default function InStorePromotions() {
                   className={inputCls}
                   value={editing.productId}
                   disabled={!editing.isNew}
-                  onChange={(e) => setEditing({ ...editing, productId: e.target.value })}
+                  onChange={(e) =>
+                    setEditing({ ...editing, productId: e.target.value })
+                  }
                   required
                 >
                   <option value="">-- Choose a Product --</option>
                   {allProducts.map((p) => (
                     <option key={p._id} value={p._id}>
-                      {p.name} {p.sku ? `(${p.sku})` : ""} - ${Number(p.price).toFixed(2)}
+                      {p.name} {p.sku ? `(${p.sku})` : ""} - $
+                      {Number(p.price).toFixed(2)}
                     </option>
                   ))}
                 </select>
@@ -345,7 +362,9 @@ export default function InStorePromotions() {
                 <select
                   className={inputCls}
                   value={editing.discountType}
-                  onChange={(e) => setEditing({ ...editing, discountType: e.target.value })}
+                  onChange={(e) =>
+                    setEditing({ ...editing, discountType: e.target.value })
+                  }
                 >
                   <option value="none">None (Standard Price)</option>
                   <option value="percentage">Percentage Discount (%)</option>
@@ -363,7 +382,9 @@ export default function InStorePromotions() {
                   step="0.01"
                   className={inputCls}
                   value={editing.discountValue}
-                  onChange={(e) => setEditing({ ...editing, discountValue: e.target.value })}
+                  onChange={(e) =>
+                    setEditing({ ...editing, discountValue: e.target.value })
+                  }
                   placeholder="e.g. 10"
                 />
               </div>
@@ -377,7 +398,9 @@ export default function InStorePromotions() {
                   min="1"
                   className={inputCls}
                   value={editing.displayOrder}
-                  onChange={(e) => setEditing({ ...editing, displayOrder: e.target.value })}
+                  onChange={(e) =>
+                    setEditing({ ...editing, displayOrder: e.target.value })
+                  }
                 />
               </div>
 
@@ -389,7 +412,9 @@ export default function InStorePromotions() {
                   type="text"
                   className={inputCls}
                   value={editing.promoLabel}
-                  onChange={(e) => setEditing({ ...editing, promoLabel: e.target.value })}
+                  onChange={(e) =>
+                    setEditing({ ...editing, promoLabel: e.target.value })
+                  }
                   placeholder="e.g. In-store only"
                 />
               </div>
@@ -402,7 +427,9 @@ export default function InStorePromotions() {
                   type="date"
                   className={inputCls}
                   value={editing.startDate}
-                  onChange={(e) => setEditing({ ...editing, startDate: e.target.value })}
+                  onChange={(e) =>
+                    setEditing({ ...editing, startDate: e.target.value })
+                  }
                 />
               </div>
 
@@ -414,7 +441,9 @@ export default function InStorePromotions() {
                   type="date"
                   className={inputCls}
                   value={editing.endDate}
-                  onChange={(e) => setEditing({ ...editing, endDate: e.target.value })}
+                  onChange={(e) =>
+                    setEditing({ ...editing, endDate: e.target.value })
+                  }
                 />
               </div>
 
@@ -422,7 +451,9 @@ export default function InStorePromotions() {
                 <input
                   type="checkbox"
                   checked={editing.isActive}
-                  onChange={(e) => setEditing({ ...editing, isActive: e.target.checked })}
+                  onChange={(e) =>
+                    setEditing({ ...editing, isActive: e.target.checked })
+                  }
                 />
                 Active (visible on customer storefront)
               </label>
@@ -451,14 +482,19 @@ export default function InStorePromotions() {
       )}
 
       {deleting && (
-        <Modal title="Remove In-Store Promotion" onClose={() => setDeleting(null)}>
+        <Modal
+          title="Remove In-Store Promotion"
+          onClose={() => setDeleting(null)}
+        >
           <div className="space-y-2 text-sm text-gray-600">
             <p>
               Are you sure you want to remove{" "}
-              <strong>{deleting.product?.name || "this promotion"}</strong> from In-Store Promotions?
+              <strong>{deleting.product?.name || "this promotion"}</strong> from
+              In-Store Promotions?
             </p>
             <p className="text-xs text-gray-500 italic bg-amber-50 text-amber-800 p-2 border border-amber-100">
-              Note: This will only remove the product from the In-Store Promotions list. The actual Product record will remain untouched.
+              Note: This will only remove the product from the In-Store
+              Promotions list. The actual Product record will remain untouched.
             </p>
           </div>
           <DeleteModalActions
