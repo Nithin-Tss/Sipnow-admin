@@ -30,6 +30,7 @@ const NAV = [
   { to: "/catalogue", icon: FolderTree, label: "Catalogue" },
   { to: "/offers", icon: Tag, label: "General Promotions" },
   { to: "/promotions", icon: Percent, label: "Promotions" },
+  { to: "/in-store-promotions", icon: Store, label: "In-Store Promotions" },
   { to: "/coupons", icon: Ticket, label: "Coupons" },
   { to: "/gift-cards", icon: Gift, label: "Gift Cards" },
   { to: "/stores", icon: Store, label: "Stores" },
