@@ -4,12 +4,13 @@ import { categoriesStore as store } from "../lib/entityStores";
 const fields = [
   { name: "name", label: "Category name", required: true, colSpan: 2 },
   { name: "image", label: "Image URL", colSpan: 2 },
-  { name: "isActive", label: "Active", type: "checkbox", default: true },
   { name: "description", label: "Description", type: "textarea", colSpan: 2 },
+  { name: "isActive", label: "Active", type: "checkbox", default: true },
 ];
 
 const columns = [
   { key: "name", label: "Name" },
+  { key: "slug", label: "Slug" },
   { key: "description", label: "Description" },
   {
     key: "isActive",

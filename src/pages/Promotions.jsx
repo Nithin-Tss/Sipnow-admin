@@ -3,11 +3,27 @@ import { promotionsStore as store } from "../lib/entityStores";
 
 const fields = [
   { name: "title", label: "Promotion title", required: true, colSpan: 2 },
+  { name: "description", label: "Description", type: "textarea", colSpan: 2 },
+  {
+    name: "type",
+    label: "Type",
+    type: "select",
+    default: "general",
+    options: [
+      { value: "general", label: "General" },
+      { value: "product", label: "Product" },
+      { value: "category", label: "Category" },
+      { value: "brand", label: "Brand" },
+      { value: "seasonal", label: "Seasonal" },
+      { value: "member", label: "Member" },
+      { value: "clearance", label: "Clearance" },
+    ],
+  },
   {
     name: "discountType",
     label: "Discount type",
     type: "select",
-    default: "percentage",
+    default: "none",
     options: [
       { value: "none", label: "None" },
       { value: "percentage", label: "Percentage" },
@@ -15,23 +31,31 @@ const fields = [
     ],
   },
   { name: "discountValue", label: "Discount value", type: "number" },
+  { name: "priority", label: "Priority", type: "number" },
   { name: "startDate", label: "Start date", type: "date" },
   { name: "endDate", label: "End date", type: "date" },
+  { name: "image", label: "Image URL", colSpan: 2 },
   { name: "isActive", label: "Active", type: "checkbox", default: true },
-  { name: "description", label: "Description", type: "textarea", colSpan: 2 },
 ];
+
+function discountLabel(p) {
+  if (!p.discountType || p.discountType === "none") return "—";
+  return p.discountType === "percentage"
+    ? `${p.discountValue}%`
+    : `$${Number(p.discountValue || 0).toFixed(2)}`;
+}
 
 const columns = [
   { key: "title", label: "Title" },
   {
+    key: "type",
+    label: "Type",
+    render: (p) => <span className="capitalize">{p.type}</span>,
+  },
+  {
     key: "discount",
     label: "Discount",
-    render: (p) =>
-      p.discountType === "percentage"
-        ? `${p.discountValue}%`
-        : p.discountType === "fixed"
-          ? `$${Number(p.discountValue || 0).toFixed(2)}`
-          : "—",
+    render: discountLabel,
   },
   {
     key: "period",

@@ -2,8 +2,12 @@ import CrudPage from "../components/CrudPage";
 import { giftCardsStore as store } from "../lib/entityStores";
 
 const fields = [
-  { name: "amount", label: "Amount", type: "number", required: true },
-  { name: "recipientName", label: "Recipient name", required: true },
+  {
+    name: "recipientName",
+    label: "Recipient name",
+    required: true,
+    colSpan: 2,
+  },
   {
     name: "recipientEmail",
     label: "Recipient email",
@@ -11,24 +15,35 @@ const fields = [
     required: true,
     colSpan: 2,
   },
+  {
+    name: "amount",
+    label: "Amount (used on create only)",
+    type: "number",
+    required: true,
+  },
   { name: "expiryDate", label: "Expiry date", type: "date" },
+  { name: "message", label: "Gift message", type: "textarea", colSpan: 2 },
   { name: "isActive", label: "Active", type: "checkbox", default: true },
-  { name: "message", label: "Message", type: "textarea", colSpan: 2 },
 ];
 
 const columns = [
   { key: "code", label: "Code" },
+  { key: "recipientName", label: "Recipient" },
   {
     key: "amount",
     label: "Amount",
-    render: (g) => `$${Number(g.amount).toFixed(2)}`,
+    render: (g) => `$${Number(g.amount || 0).toFixed(2)}`,
   },
   {
     key: "balance",
     label: "Balance",
-    render: (g) => `$${Number(g.balance).toFixed(2)}`,
+    render: (g) => `$${Number(g.balance || 0).toFixed(2)}`,
   },
-  { key: "recipientName", label: "Recipient" },
+  {
+    key: "isRedeemed",
+    label: "Redeemed",
+    render: (g) => (g.isRedeemed ? "Yes" : "No"),
+  },
   {
     key: "isActive",
     label: "Status",
@@ -53,7 +68,7 @@ export default function GiftCards() {
       queryKey="gift-cards"
       columns={columns}
       fields={fields}
-      searchFields={["code", "recipientName", "recipientEmail"]}
+      searchFields={["code", "recipientName"]}
       searchPlaceholder="Search gift cards…"
     />
   );

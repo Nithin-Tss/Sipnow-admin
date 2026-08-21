@@ -17,15 +17,10 @@ const fields = [
   {
     name: "discountValue",
     label: "Discount value",
-    type: "number",
     required: true,
-  },
-  {
-    name: "minimumPurchase",
-    label: "Minimum purchase",
     type: "number",
-    default: 0,
   },
+  { name: "minimumPurchase", label: "Minimum purchase", type: "number" },
   { name: "maximumDiscount", label: "Maximum discount", type: "number" },
   { name: "startDate", label: "Start date", type: "date" },
   { name: "endDate", label: "End date", type: "date" },
@@ -35,7 +30,7 @@ const fields = [
 
 const columns = [
   { key: "title", label: "Title" },
-  { key: "code", label: "Code" },
+  { key: "code", label: "Code", render: (o) => o.code || "—" },
   {
     key: "discount",
     label: "Discount",

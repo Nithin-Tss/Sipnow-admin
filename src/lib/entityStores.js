@@ -1,78 +1,59 @@
+import { createMockStore } from "./mockStore";
 import { apiFetch } from "./apiClient";
-
-function paginate(
-  items,
-  { search = "", page = 1, perPage = 20, searchFields = ["name"] } = {},
-) {
-  const q = search.trim().toLowerCase();
-
-  const filtered = q
-    ? items.filter((item) =>
-        searchFields.some((field) =>
-          String(item[field] ?? "")
-            .toLowerCase()
-            .includes(q),
-        ),
-      )
-    : items;
-
-  const total = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(total / perPage));
-  const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
-  const start = (safePage - 1) * perPage;
-
-  return {
-    items: filtered.slice(start, start + perPage),
-    total,
-    totalPages,
-  };
-}
-
-function unwrap(response, key) {
-  if (Array.isArray(response)) return response;
-  return response?.[key] ?? [];
-}
 
 /* =========================================================
    USERS
-   Admin can view every registered user, invite new ones,
-   change their role, and remove accounts.
+   Real backend: GET /api/users returns a bare array of User
+   docs (_id, name, email, phone, role, createdAt). There is
+   no create/generic-update admin endpoint — only role update
+   (PUT /api/users/:id/role) and delete.
    ========================================================= */
 
 export const usersStore = {
+  async list({ search = "", page = 1, perPage = 20 } = {}) {
+    const response = await apiFetch("/users");
+
+    const users = Array.isArray(response)
+      ? response
+      : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.users)
+          ? response.users
+          : [];
+
+    const searchValue = search.trim().toLowerCase();
+
+    const filtered = searchValue
+      ? users.filter((u) =>
+          `${u.name || ""} ${u.email || ""}`
+            .toLowerCase()
+            .includes(searchValue),
+        )
+      : users;
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+    const start = (safePage - 1) * perPage;
+
+    return {
+      items: filtered.slice(start, start + perPage),
+      total,
+      totalPages,
+    };
+  },
+
   async all() {
     const response = await apiFetch("/users");
-    return unwrap(response, "users");
+    return Array.isArray(response) ? response : (response?.data ?? []);
   },
 
-  async list({
-    search = "",
-    page = 1,
-    perPage = 20,
-    searchFields = ["name", "email"],
-  } = {}) {
-    const items = await this.all();
-    return paginate(items, { search, page, perPage, searchFields });
-  },
-
-  async create(body) {
-    return apiFetch("/users", {
-      method: "POST",
-      body: JSON.stringify({
-        name: body.name,
-        email: body.email,
-        password: body.password,
-        phone: body.phone,
-        role: body.role,
-      }),
-    });
-  },
-
-  async update(id, body) {
-    return apiFetch(`/users/${id}/role`, {
+  async updateRole(id, role) {
+    const response = await apiFetch(`/users/${id}/role`, {
       method: "PUT",
-      body: JSON.stringify({ role: body.role }),
+      body: JSON.stringify({ role }),
     });
+    return response.data ?? response;
   },
 
   async remove(id) {
@@ -84,17 +65,45 @@ export const usersStore = {
 
 /* =========================================================
    COUPONS
+   Admin coupon CRUD uses the backend API.
+   Coupons are NOT stored as frontend/mock data.
    ========================================================= */
 
 export const couponsStore = {
-  async all() {
-    const response = await apiFetch("/coupons");
-    return unwrap(response, "coupons");
-  },
-
   async list({ search = "", page = 1, perPage = 20 } = {}) {
-    const coupons = await this.all();
-    return paginate(coupons, { search, page, perPage, searchFields: ["code"] });
+    const response = await apiFetch("/coupons");
+
+    const coupons = Array.isArray(response)
+      ? response
+      : Array.isArray(response.data)
+        ? response.data
+        : Array.isArray(response.coupons)
+          ? response.coupons
+          : [];
+
+    const searchValue = search.trim().toLowerCase();
+
+    const filtered = searchValue
+      ? coupons.filter((coupon) =>
+          String(coupon.code || "")
+            .toLowerCase()
+            .includes(searchValue),
+        )
+      : coupons;
+
+    const total = filtered.length;
+
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+
+    const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+
+    const start = (safePage - 1) * perPage;
+
+    return {
+      items: filtered.slice(start, start + perPage),
+      total,
+      totalPages,
+    };
   },
 
   async create(body) {
@@ -124,48 +133,67 @@ export const couponsStore = {
 
 /* =========================================================
    GIFT CARDS
+   Real backend: GET /api/giftcards -> { giftCards: [...] }.
+   Fields: code, amount, balance, recipientName, recipientEmail,
+   message, expiryDate, isActive, isRedeemed.
    ========================================================= */
 
 export const giftCardsStore = {
-  async all() {
-    const response = await apiFetch("/giftcards");
-    return unwrap(response, "giftCards");
-  },
-
   async list({ search = "", page = 1, perPage = 20 } = {}) {
-    const giftCards = await this.all();
-    return paginate(giftCards, {
-      search,
-      page,
-      perPage,
-      searchFields: ["code", "recipientName", "recipientEmail"],
-    });
+    const response = await apiFetch("/giftcards");
+
+    const giftCards = Array.isArray(response)
+      ? response
+      : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.giftCards)
+          ? response.giftCards
+          : [];
+
+    const searchValue = search.trim().toLowerCase();
+
+    const filtered = searchValue
+      ? giftCards.filter((g) =>
+          String(g.code || "")
+            .toLowerCase()
+            .includes(searchValue),
+        )
+      : giftCards;
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+    const start = (safePage - 1) * perPage;
+
+    return {
+      items: filtered.slice(start, start + perPage),
+      total,
+      totalPages,
+    };
   },
 
   async create(body) {
-    return apiFetch("/giftcards", {
+    const response = await apiFetch("/giftcards", {
       method: "POST",
-      body: JSON.stringify({
-        amount: body.amount,
-        recipientName: body.recipientName,
-        recipientEmail: body.recipientEmail,
-        message: body.message,
-        expiryDate: body.expiryDate || null,
-      }),
+      body: JSON.stringify(body),
     });
+    return response.giftCard ?? response.data ?? response;
   },
 
   async update(id, body) {
-    return apiFetch(`/giftcards/${id}`, {
+    const response = await apiFetch(`/giftcards/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({
-        recipientName: body.recipientName,
-        recipientEmail: body.recipientEmail,
-        message: body.message,
-        expiryDate: body.expiryDate || null,
-        isActive: body.isActive,
-      }),
+      body: JSON.stringify(body),
     });
+    return response.giftCard ?? response.data ?? response;
+  },
+
+  async updateStatus(id, isActive) {
+    const response = await apiFetch(`/giftcards/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ isActive }),
+    });
+    return response.giftCard ?? response.data ?? response;
   },
 
   async remove(id) {
@@ -177,66 +205,67 @@ export const giftCardsStore = {
 
 /* =========================================================
    STORES
+   Real backend: GET /api/stores?all=true -> { stores: [...] }.
+   Address is a nested object: { addressLine1, addressLine2,
+   city, state, postalCode, country }.
    ========================================================= */
 
-function flattenStore(store) {
-  return {
-    ...store,
-    addressLine1: store.address?.addressLine1 ?? "",
-    addressLine2: store.address?.addressLine2 ?? "",
-    city: store.address?.city ?? "",
-    state: store.address?.state ?? "",
-    postalCode: store.address?.postalCode ?? "",
-    country: store.address?.country ?? "India",
-  };
-}
-
-function storeBody(body) {
-  return {
-    name: body.name,
-    address: {
-      addressLine1: body.addressLine1,
-      addressLine2: body.addressLine2,
-      city: body.city,
-      state: body.state,
-      postalCode: body.postalCode,
-      country: body.country || "India",
-    },
-    phone: body.phone,
-    email: body.email,
-    deliveryRadiusKm: body.deliveryRadiusKm,
-    isActive: body.isActive,
-  };
-}
-
 export const storesStore = {
-  async all() {
-    const response = await apiFetch("/stores?all=true");
-    return unwrap(response, "stores").map(flattenStore);
-  },
-
   async list({ search = "", page = 1, perPage = 20 } = {}) {
-    const stores = await this.all();
-    return paginate(stores, {
-      search,
-      page,
-      perPage,
-      searchFields: ["name", "city"],
-    });
+    const response = await apiFetch("/stores?all=true");
+
+    const stores = Array.isArray(response)
+      ? response
+      : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.stores)
+          ? response.stores
+          : [];
+
+    const searchValue = search.trim().toLowerCase();
+
+    const filtered = searchValue
+      ? stores.filter((s) =>
+          `${s.name || ""} ${s.address?.city || ""}`
+            .toLowerCase()
+            .includes(searchValue),
+        )
+      : stores;
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+    const start = (safePage - 1) * perPage;
+
+    return {
+      items: filtered.slice(start, start + perPage),
+      total,
+      totalPages,
+    };
   },
 
   async create(body) {
-    return apiFetch("/stores", {
+    const response = await apiFetch("/stores", {
       method: "POST",
-      body: JSON.stringify(storeBody(body)),
+      body: JSON.stringify(body),
     });
+    return response.store ?? response.data ?? response;
   },
 
   async update(id, body) {
-    return apiFetch(`/stores/${id}`, {
+    const response = await apiFetch(`/stores/${id}`, {
       method: "PUT",
-      body: JSON.stringify(storeBody(body)),
+      body: JSON.stringify(body),
     });
+    return response.store ?? response.data ?? response;
+  },
+
+  async updateStatus(id, isActive) {
+    const response = await apiFetch(`/stores/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ isActive }),
+    });
+    return response.store ?? response.data ?? response;
   },
 
   async remove(id) {
@@ -250,85 +279,79 @@ export const storesStore = {
    SUPPLIERS
    ========================================================= */
 
-export const suppliersStore = {
-  async all() {
-    const response = await apiFetch("/suppliers");
-    return unwrap(response, "suppliers");
+export const suppliersStore = createMockStore("sipnow_admin_suppliers", [
+  {
+    _id: "supplier-seed-1",
+    name: "Lone Star Distributors",
+    contactEmail: "orders@lonestardist.com",
+    phone: "(512) 555-0100",
+    region: "Texas",
   },
-
-  async list({ search = "", page = 1, perPage = 20 } = {}) {
-    const suppliers = await this.all();
-    return paginate(suppliers, {
-      search,
-      page,
-      perPage,
-      searchFields: ["name", "region"],
-    });
+  {
+    _id: "supplier-seed-2",
+    name: "Gulf Coast Beverage Co.",
+    contactEmail: "sales@gulfcoastbev.com",
+    phone: "(713) 555-0142",
+    region: "Gulf Coast",
   },
-
-  async create(body) {
-    return apiFetch("/suppliers", {
-      method: "POST",
-      body: JSON.stringify(body),
-    });
-  },
-
-  async update(id, body) {
-    return apiFetch(`/suppliers/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(body),
-    });
-  },
-
-  async remove(id) {
-    return apiFetch(`/suppliers/${id}`, {
-      method: "DELETE",
-    });
-  },
-};
+]);
 
 /* =========================================================
    CATEGORIES
+   Real backend: GET /api/categories?all=true -> { categories: [...] }.
+   Fields: name, slug (auto), description, image, isActive.
+   The mock's "group" (wine/spirits/beer) concept does not
+   exist on the backend Category model — dropped.
    ========================================================= */
 
 export const categoriesStore = {
-  async all() {
-    const response = await apiFetch("/categories?all=true");
-    return unwrap(response, "categories");
-  },
-
   async list({ search = "", page = 1, perPage = 20 } = {}) {
-    const categories = await this.all();
-    return paginate(categories, {
-      search,
-      page,
-      perPage,
-      searchFields: ["name"],
-    });
+    const response = await apiFetch("/categories?all=true");
+
+    const categories = Array.isArray(response)
+      ? response
+      : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.categories)
+          ? response.categories
+          : [];
+
+    const searchValue = search.trim().toLowerCase();
+
+    const filtered = searchValue
+      ? categories.filter((c) =>
+          String(c.name || "")
+            .toLowerCase()
+            .includes(searchValue),
+        )
+      : categories;
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+    const start = (safePage - 1) * perPage;
+
+    return {
+      items: filtered.slice(start, start + perPage),
+      total,
+      totalPages,
+    };
   },
 
   async create(body) {
-    return apiFetch("/categories", {
+    const response = await apiFetch("/categories", {
       method: "POST",
-      body: JSON.stringify({
-        name: body.name,
-        description: body.description,
-        image: body.image,
-        isActive: body.isActive,
-      }),
+      body: JSON.stringify(body),
     });
+    return response.category ?? response.data ?? response;
   },
 
   async update(id, body) {
-    return apiFetch(`/categories/${id}`, {
+    const response = await apiFetch(`/categories/${id}`, {
       method: "PUT",
-      body: JSON.stringify({
-        name: body.name,
-        description: body.description,
-        image: body.image,
-        isActive: body.isActive,
-      }),
+      body: JSON.stringify(body),
     });
+    return response.category ?? response.data ?? response;
   },
 
   async remove(id) {
@@ -340,52 +363,59 @@ export const categoriesStore = {
 
 /* =========================================================
    PROMOTIONS
+   Real backend: GET /api/promotions -> { promotions: [...] }.
+   Fields: title, description, type, discountType, discountValue,
+   startDate, endDate, priority, isActive (not discountPercent/active).
    ========================================================= */
 
 export const promotionsStore = {
-  async all() {
-    const response = await apiFetch("/promotions");
-    return unwrap(response, "promotions");
-  },
-
   async list({ search = "", page = 1, perPage = 20 } = {}) {
-    const promotions = await this.all();
-    return paginate(promotions, {
-      search,
-      page,
-      perPage,
-      searchFields: ["title"],
-    });
+    const response = await apiFetch("/promotions");
+
+    const promotions = Array.isArray(response)
+      ? response
+      : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.promotions)
+          ? response.promotions
+          : [];
+
+    const searchValue = search.trim().toLowerCase();
+
+    const filtered = searchValue
+      ? promotions.filter((p) =>
+          String(p.title || "")
+            .toLowerCase()
+            .includes(searchValue),
+        )
+      : promotions;
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+    const start = (safePage - 1) * perPage;
+
+    return {
+      items: filtered.slice(start, start + perPage),
+      total,
+      totalPages,
+    };
   },
 
   async create(body) {
-    return apiFetch("/promotions", {
+    const response = await apiFetch("/promotions", {
       method: "POST",
-      body: JSON.stringify({
-        title: body.title,
-        description: body.description,
-        discountType: body.discountType,
-        discountValue: body.discountValue,
-        startDate: body.startDate || null,
-        endDate: body.endDate || null,
-        isActive: body.isActive,
-      }),
+      body: JSON.stringify(body),
     });
+    return response.promotion ?? response.data ?? response;
   },
 
   async update(id, body) {
-    return apiFetch(`/promotions/${id}`, {
+    const response = await apiFetch(`/promotions/${id}`, {
       method: "PUT",
-      body: JSON.stringify({
-        title: body.title,
-        description: body.description,
-        discountType: body.discountType,
-        discountValue: body.discountValue,
-        startDate: body.startDate || null,
-        endDate: body.endDate || null,
-        isActive: body.isActive,
-      }),
+      body: JSON.stringify(body),
     });
+    return response.promotion ?? response.data ?? response;
   },
 
   async remove(id) {
@@ -397,58 +427,60 @@ export const promotionsStore = {
 
 /* =========================================================
    OFFERS
+   Real backend: GET /api/offers -> { offers: [...] }.
+   Fields: title, description, code, discountType, discountValue,
+   minimumPurchase, maximumDiscount, startDate, endDate, isActive
+   (not badgeText/active).
    ========================================================= */
 
 export const offersStore = {
-  async all() {
-    const response = await apiFetch("/offers");
-    return unwrap(response, "offers");
-  },
-
   async list({ search = "", page = 1, perPage = 20 } = {}) {
-    const offers = await this.all();
-    return paginate(offers, {
-      search,
-      page,
-      perPage,
-      searchFields: ["title", "code"],
-    });
+    const response = await apiFetch("/offers");
+
+    const offers = Array.isArray(response)
+      ? response
+      : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.offers)
+          ? response.offers
+          : [];
+
+    const searchValue = search.trim().toLowerCase();
+
+    const filtered = searchValue
+      ? offers.filter((o) =>
+          `${o.title || ""} ${o.code || ""}`
+            .toLowerCase()
+            .includes(searchValue),
+        )
+      : offers;
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+    const start = (safePage - 1) * perPage;
+
+    return {
+      items: filtered.slice(start, start + perPage),
+      total,
+      totalPages,
+    };
   },
 
   async create(body) {
-    return apiFetch("/offers", {
+    const response = await apiFetch("/offers", {
       method: "POST",
-      body: JSON.stringify({
-        title: body.title,
-        description: body.description,
-        code: body.code,
-        discountType: body.discountType,
-        discountValue: body.discountValue,
-        minimumPurchase: body.minimumPurchase,
-        maximumDiscount: body.maximumDiscount,
-        startDate: body.startDate || null,
-        endDate: body.endDate || null,
-        isActive: body.isActive,
-      }),
+      body: JSON.stringify(body),
     });
+    return response.offer ?? response.data ?? response;
   },
 
   async update(id, body) {
-    return apiFetch(`/offers/${id}`, {
+    const response = await apiFetch(`/offers/${id}`, {
       method: "PUT",
-      body: JSON.stringify({
-        title: body.title,
-        description: body.description,
-        code: body.code,
-        discountType: body.discountType,
-        discountValue: body.discountValue,
-        minimumPurchase: body.minimumPurchase,
-        maximumDiscount: body.maximumDiscount,
-        startDate: body.startDate || null,
-        endDate: body.endDate || null,
-        isActive: body.isActive,
-      }),
+      body: JSON.stringify(body),
     });
+    return response.offer ?? response.data ?? response;
   },
 
   async remove(id) {
@@ -462,24 +494,21 @@ export const offersStore = {
    ORDERS
    ========================================================= */
 
-function mapOrder(order) {
-  return {
-    ...order,
-    customerName: order.user?.name || order.user?.email || "Customer",
-    total: order.totalAmount,
-    placedAt: order.createdAt,
-    fulfilment: order.fulfilment || "delivery",
-  };
-}
-
 export const ordersStore = {
-  async all() {
-    const response = await apiFetch("/orders");
-    return (response.orders || []).map(mapOrder);
-  },
-
   async list({ search = "", page = 1, perPage = 20 } = {}) {
-    const orders = await this.all();
+    const response = await apiFetch("/orders");
+
+    const orders = (response.orders || []).map((order) => ({
+      ...order,
+
+      customerName: order.user?.name || order.user?.email || "Customer",
+
+      total: order.totalAmount,
+
+      placedAt: order.createdAt,
+
+      fulfilment: order.fulfilment || "delivery",
+    }));
 
     const term = search.trim().toLowerCase();
 
@@ -495,7 +524,9 @@ export const ordersStore = {
 
     return {
       items: filtered.slice(start, start + perPage),
+
       total: filtered.length,
+
       totalPages: Math.max(1, Math.ceil(filtered.length / perPage)),
     };
   },
@@ -503,7 +534,10 @@ export const ordersStore = {
   async update(id, body) {
     const response = await apiFetch(`/orders/${id}/status`, {
       method: "PATCH",
-      body: JSON.stringify({ status: body.status }),
+
+      body: JSON.stringify({
+        status: body.status,
+      }),
     });
 
     return response.order;
@@ -518,48 +552,57 @@ export const ordersStore = {
 
 /* =========================================================
    REVIEWS
-   Admin can see reviews in every moderation status and
-   approve/hide them. Reviews are authored by customers,
-   so admins cannot fabricate new ones from this panel.
+   Real backend: GET /api/reviews?status=pending|approved|hidden
+   -> { reviews: [...] }, each populated with `product` (name,
+   image) and `user` (name). No flat productName/customerName —
+   moderation is status + delete only (no admin create/edit).
    ========================================================= */
 
-const REVIEW_STATUSES = ["pending", "approved", "hidden"];
-
 export const reviewsStore = {
-  async all() {
-    const results = await Promise.all(
-      REVIEW_STATUSES.map((status) =>
-        apiFetch(`/reviews?status=${status}`).then((response) =>
-          unwrap(response, "reviews"),
-        ),
-      ),
+  async list({ search = "", status = "", page = 1, perPage = 20 } = {}) {
+    const params = new URLSearchParams();
+    if (status) params.set("status", status);
+
+    const response = await apiFetch(
+      `/reviews${params.toString() ? `?${params.toString()}` : ""}`,
     );
 
-    return results
-      .flat()
-      .map((review) => ({
-        ...review,
-        productName: review.product?.name || "Unknown product",
-        customerName: review.user?.name || "Anonymous",
-      }))
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const reviews = Array.isArray(response)
+      ? response
+      : Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.reviews)
+          ? response.reviews
+          : [];
+
+    const searchValue = search.trim().toLowerCase();
+
+    const filtered = searchValue
+      ? reviews.filter((r) =>
+          `${r.product?.name || ""} ${r.user?.name || ""}`
+            .toLowerCase()
+            .includes(searchValue),
+        )
+      : reviews;
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+    const start = (safePage - 1) * perPage;
+
+    return {
+      items: filtered.slice(start, start + perPage),
+      total,
+      totalPages,
+    };
   },
 
-  async list({ search = "", page = 1, perPage = 20 } = {}) {
-    const reviews = await this.all();
-    return paginate(reviews, {
-      search,
-      page,
-      perPage,
-      searchFields: ["productName", "customerName"],
-    });
-  },
-
-  async update(id, body) {
-    return apiFetch(`/reviews/${id}/status`, {
+  async updateStatus(id, status) {
+    const response = await apiFetch(`/reviews/${id}/status`, {
       method: "PATCH",
-      body: JSON.stringify({ status: body.status }),
+      body: JSON.stringify({ status }),
     });
+    return response.review ?? response.data ?? response;
   },
 
   async remove(id) {
@@ -570,37 +613,56 @@ export const reviewsStore = {
 };
 
 /* =========================================================
-   MESSAGES
-   Contact messages are submitted by customers via the
-   storefront; admins can only triage (status + delete).
+   MESSAGES (contact)
+   Real backend: GET /api/contact -> bare array of ContactMessage
+   docs { _id, user, name, email, phone, subject, message, status,
+   createdAt }. status enum is pending/in-progress/resolved (not
+   unread/read). No admin create — status update + delete only.
    ========================================================= */
 
 export const messagesStore = {
-  async all() {
-    const response = await apiFetch("/contact");
-    return unwrap(response, "messages").map((message) => ({
-      ...message,
-      fromName: message.name,
-      fromEmail: message.email,
-      body: message.message,
-    }));
+  async list({ search = "", status = "", page = 1, perPage = 20 } = {}) {
+    const params = new URLSearchParams();
+    if (status) params.set("status", status);
+
+    const response = await apiFetch(
+      `/contact${params.toString() ? `?${params.toString()}` : ""}`,
+    );
+
+    const messages = Array.isArray(response)
+      ? response
+      : Array.isArray(response?.data)
+        ? response.data
+        : [];
+
+    const searchValue = search.trim().toLowerCase();
+
+    const filtered = searchValue
+      ? messages.filter((m) =>
+          `${m.name || ""} ${m.subject || ""}`
+            .toLowerCase()
+            .includes(searchValue),
+        )
+      : messages;
+
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+    const start = (safePage - 1) * perPage;
+
+    return {
+      items: filtered.slice(start, start + perPage),
+      total,
+      totalPages,
+    };
   },
 
-  async list({ search = "", page = 1, perPage = 20 } = {}) {
-    const messages = await this.all();
-    return paginate(messages, {
-      search,
-      page,
-      perPage,
-      searchFields: ["fromName", "subject"],
-    });
-  },
-
-  async update(id, body) {
-    return apiFetch(`/contact/${id}/status`, {
+  async updateStatus(id, status) {
+    const response = await apiFetch(`/contact/${id}/status`, {
       method: "PATCH",
-      body: JSON.stringify({ status: body.status }),
+      body: JSON.stringify({ status }),
     });
+    return response.data ?? response;
   },
 
   async remove(id) {
