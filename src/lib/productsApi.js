@@ -33,6 +33,10 @@ export async function deleteProduct(id) {
   return apiFetch(`/products/${id}`, { method: "DELETE" });
 }
 
+export async function deleteAllProducts() {
+  return apiFetch("/products/all", { method: "DELETE" });
+}
+
 export async function verifyProduct(id, verified) {
   return apiFetch(`/products/${id}/verify`, {
     method: "PATCH",

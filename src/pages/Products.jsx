@@ -7,6 +7,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  deleteAllProducts,
   verifyProduct,
 } from "../lib/productsApi";
 import { inputCls } from "../lib/ui";
@@ -298,6 +299,7 @@ export default function Products() {
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState(null); // product object, or {} for new
   const [deleting, setDeleting] = useState(null); // product object
+  const [deletingAll, setDeletingAll] = useState(false);
   const [importing, setImporting] = useState(false);
 
   const queryClient = useQueryClient();
@@ -332,6 +334,15 @@ export default function Products() {
     onSuccess: () => {
       invalidate();
       setDeleting(null);
+    },
+  });
+
+  const deleteAllMutation = useMutation({
+    mutationFn: deleteAllProducts,
+    onSuccess: () => {
+      invalidate();
+      setDeletingAll(false);
+      setPage(1);
     },
   });
 
@@ -436,6 +447,16 @@ export default function Products() {
             className="flex items-center gap-1.5 rounded-lg bg-primary text-white text-sm px-4 py-2 hover:opacity-90 transition-opacity shadow-sm"
           >
             <Plus size={14} /> Add Product
+          </button>
+          <button
+            onClick={() => {
+              deleteAllMutation.reset();
+              setDeletingAll(true);
+            }}
+            disabled={total === 0}
+            className="flex items-center gap-1.5 rounded-lg border border-red-600 text-red-600 text-sm px-4 py-2 hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <Trash2 size={14} /> Delete All
           </button>
         </div>
       </div>
@@ -743,6 +764,27 @@ export default function Products() {
             isPending={deleteMutation.isPending}
             onCancel={() => setDeleting(null)}
             onDelete={() => deleteMutation.mutate(deleting._id)}
+          />
+        </Modal>
+      )}
+
+      {deletingAll && (
+        <Modal
+          title="Delete All Products"
+          onClose={() => setDeletingAll(false)}
+        >
+          <p className="text-sm text-gray-600">
+            Are you sure you want to delete{" "}
+            <strong>all {total} product(s)</strong> from the database? This
+            cannot be undone.
+          </p>
+          <DeleteModalActions
+            formErr={deleteAllMutation.error?.message}
+            isPending={deleteAllMutation.isPending}
+            confirmLabel="Delete All"
+            pendingLabel="Deleting All…"
+            onCancel={() => setDeletingAll(false)}
+            onDelete={() => deleteAllMutation.mutate()}
           />
         </Modal>
       )}
