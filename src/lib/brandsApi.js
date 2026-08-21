@@ -1,6 +1,10 @@
 import { apiFetch } from "./apiClient";
 
-export async function fetchBrands({ search = "", page = 1, perPage = 20 }) {
+export async function fetchBrands({
+  search = "",
+  page = 1,
+  perPage = 20,
+}) {
   const params = new URLSearchParams();
 
   params.set("all", "true");
@@ -11,7 +15,9 @@ export async function fetchBrands({ search = "", page = 1, perPage = 20 }) {
     params.set("search", search);
   }
 
-  const response = await apiFetch(`/brands?${params.toString()}`);
+  const response = await apiFetch(
+    `/brands?${params.toString()}`
+  );
 
   const brands = Array.isArray(response?.items)
     ? response.items
@@ -34,11 +40,20 @@ export async function createBrand(body) {
       description: body.description || "",
       logo: body.logo || "",
       bannerImage: body.bannerImage || "",
-      bestSellingDescription: body.bestSellingDescription || "",
-      bestRatedDescription: body.bestRatedDescription || "",
-      collectionDescription: body.collectionDescription || "",
-      isActive: body.isActive !== undefined ? Boolean(body.isActive) : true,
-      verified: body.verified !== undefined ? Boolean(body.verified) : false,
+      bestSellingDescription:
+        body.bestSellingDescription || "",
+      bestRatedDescription:
+        body.bestRatedDescription || "",
+      collectionDescription:
+        body.collectionDescription || "",
+      isActive:
+        body.isActive !== undefined
+          ? Boolean(body.isActive)
+          : true,
+      verified:
+        body.verified !== undefined
+          ? Boolean(body.verified)
+          : false,
     }),
   });
 }
@@ -51,11 +66,29 @@ export async function updateBrand(id, body) {
       description: body.description || "",
       logo: body.logo || "",
       bannerImage: body.bannerImage || "",
-      bestSellingDescription: body.bestSellingDescription || "",
-      bestRatedDescription: body.bestRatedDescription || "",
-      collectionDescription: body.collectionDescription || "",
-      isActive: body.isActive !== undefined ? Boolean(body.isActive) : true,
-      verified: body.verified !== undefined ? Boolean(body.verified) : false,
+      bestSellingDescription:
+        body.bestSellingDescription || "",
+      bestRatedDescription:
+        body.bestRatedDescription || "",
+      collectionDescription:
+        body.collectionDescription || "",
+      isActive:
+        body.isActive !== undefined
+          ? Boolean(body.isActive)
+          : true,
+      verified:
+        body.verified !== undefined
+          ? Boolean(body.verified)
+          : false,
+    }),
+  });
+}
+
+export async function verifyBrand(id, verified) {
+  return apiFetch(`/brands/${id}/verify`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      verified: Boolean(verified),
     }),
   });
 }

@@ -1,12 +1,21 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 import {
   fetchBrands,
   createBrand,
   updateBrand,
   deleteBrand,
+  verifyBrand,
 } from "../lib/brandsApi";
 
 import { inputCls } from "../lib/ui";
@@ -145,6 +154,35 @@ export default function Brands() {
     },
   });
 
+  /*
+   * Brand verification mutation.
+   * This follows the same pattern as the Products page.
+   */
+  const verifyMutation = useMutation({
+    mutationFn: ({ id, verified }) => verifyBrand(id, verified),
+
+    onSuccess: (updated) => {
+      invalidate();
+
+      setEditing((cur) =>
+        cur && !cur.isNew && cur.id === updated._id
+          ? {
+              ...cur,
+              verified: updated.verified,
+              verificationEmail: updated.verificationEmail,
+            }
+          : cur
+      );
+    },
+  });
+
+  function toggleVerified(brand) {
+    verifyMutation.mutate({
+      id: brand._id,
+      verified: !brand.verified,
+    });
+  }
+
   const deleteMutation = useMutation({
     mutationFn: (id) => deleteBrand(id),
 
@@ -156,6 +194,7 @@ export default function Brands() {
 
   function openCreate() {
     saveMutation.reset();
+    verifyMutation.reset();
 
     setEditing({
       isNew: true,
@@ -165,6 +204,7 @@ export default function Brands() {
 
   function openEdit(brand) {
     saveMutation.reset();
+    verifyMutation.reset();
 
     setEditing({
       ...EMPTY_FORM,
@@ -230,25 +270,39 @@ export default function Brands() {
         />
       </div>
 
-      {/* Table */}
+      {/* Brand Table */}
       <div className="mt-4 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200 bg-gray-50/60 text-left text-xs text-gray-500">
-              <th className="px-4 py-2.5 font-medium">Brand Name</th>
+              <th className="px-4 py-2.5 font-medium">
+                Brand Name
+              </th>
 
-              <th className="px-4 py-2.5 font-medium">Description</th>
+              <th className="px-4 py-2.5 font-medium">
+                Description
+              </th>
 
-              <th className="px-4 py-2.5 font-medium">Status</th>
+              <th className="px-4 py-2.5 font-medium">
+                Status
+              </th>
 
-              <th className="px-4 py-2.5 font-medium">Verification</th>
+              <th className="px-4 py-2.5 font-medium">
+                Verification
+              </th>
 
-              <th className="px-4 py-2.5 font-medium text-right">Actions</th>
+              <th className="px-4 py-2.5 font-medium text-right">
+                Actions
+              </th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-gray-100">
-            {isLoading && <TableStateRow colSpan={5}>Loading…</TableStateRow>}
+            {isLoading && (
+              <TableStateRow colSpan={5}>
+                Loading…
+              </TableStateRow>
+            )}
 
             {isError && (
               <TableStateRow colSpan={5}>
@@ -257,7 +311,9 @@ export default function Brands() {
             )}
 
             {!isLoading && !isError && items.length === 0 && (
-              <TableStateRow colSpan={5}>No brands found.</TableStateRow>
+              <TableStateRow colSpan={5}>
+                No brands found.
+              </TableStateRow>
             )}
 
             {items.map((brand) => (
@@ -265,7 +321,9 @@ export default function Brands() {
                 key={brand._id}
                 className="hover:bg-gray-50 transition-colors"
               >
-                <td className="px-4 py-2.5 text-gray-900">{brand.name}</td>
+                <td className="px-4 py-2.5 text-gray-900">
+                  {brand.name}
+                </td>
 
                 <td className="px-4 py-2.5 text-gray-600">
                   {brand.description}
@@ -283,26 +341,42 @@ export default function Brands() {
                   </span>
                 </td>
 
+                {/* Verification */}
                 <td className="px-4 py-2.5">
-                  <div className="flex flex-col">
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium w-fit ${
-                        brand.verified
-                          ? "bg-green-50 text-green-700"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {brand.verified ? "Verified" : "Unverified"}
-                    </span>
+                  <label
+                    className="flex items-center gap-1.5 text-xs cursor-pointer"
+                    title={
+                      brand.verified
+                        ? `Verified by ${
+                            brand.verificationEmail || "Admin"
+                          }`
+                        : `Click to verify as ${
+                            user?.email || "Admin"
+                          }`
+                    }
+                  >
+                    <input
+                      type="checkbox"
+                      checked={Boolean(brand.verified)}
+                      disabled={verifyMutation.isPending}
+                      onChange={() => toggleVerified(brand)}
+                    />
 
-                    {brand.verified && brand.verificationEmail && (
-                      <span className="text-[11px] text-gray-400 mt-1">
-                        {brand.verificationEmail}
-                      </span>
-                    )}
-                  </div>
+                    <span
+                      className={
+                        brand.verified
+                          ? "text-green-700"
+                          : "text-gray-500"
+                      }
+                    >
+                      {brand.verified
+                        ? "Verified"
+                        : "Unverified"}
+                    </span>
+                  </label>
                 </td>
 
+                {/* Actions */}
                 <td className="px-4 py-2.5">
                   <div className="flex justify-end gap-1">
                     <button
@@ -359,13 +433,19 @@ export default function Brands() {
                   disabled={saveMutation.isPending}
                   className="text-sm rounded-lg bg-primary text-white px-4 py-2 hover:opacity-90 disabled:opacity-60 transition-opacity shadow-sm"
                 >
-                  {saveMutation.isPending ? "Saving…" : "Save"}
+                  {saveMutation.isPending
+                    ? "Saving…"
+                    : "Save"}
                 </button>
               </div>
             </div>
           }
         >
-          <form id="brand-form" onSubmit={handleSubmit} className="space-y-3">
+          <form
+            id="brand-form"
+            onSubmit={handleSubmit}
+            className="space-y-3"
+          >
             {/* Verification */}
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
@@ -377,18 +457,33 @@ export default function Brands() {
                   <input
                     type="checkbox"
                     checked={editing.verified}
+                    disabled={
+                      !editing.isNew &&
+                      verifyMutation.isPending
+                    }
                     onChange={(e) => {
                       const checked = e.target.checked;
 
-                      setEditing({
-                        ...editing,
-                        verified: checked,
-                        verificationEmail: checked ? user?.email || "" : "",
-                      });
+                      if (editing.isNew) {
+                        setEditing({
+                          ...editing,
+                          verified: checked,
+                          verificationEmail: checked
+                            ? user?.email || ""
+                            : "",
+                        });
+                      } else {
+                        verifyMutation.mutate({
+                          id: editing.id,
+                          verified: checked,
+                        });
+                      }
                     }}
                   />
 
-                  <span className="font-medium">Verified</span>
+                  <span className="font-medium">
+                    Verified
+                  </span>
 
                   <span
                     className={`px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -397,16 +492,22 @@ export default function Brands() {
                         : "bg-gray-200 text-gray-600"
                     }`}
                   >
-                    {editing.verified ? "Verified" : "Unverified"}
+                    {editing.verified
+                      ? "Verified"
+                      : "Unverified"}
                   </span>
                 </label>
 
                 <p className="mt-1 pl-6 text-xs text-gray-500">
                   {editing.verified
                     ? `Verified by ${
-                        editing.verificationEmail || user?.email || ""
+                        editing.verificationEmail ||
+                        user?.email ||
+                        ""
                       }`
-                    : `Will be recorded as verified by ${user?.email || ""}`}
+                    : `Will be recorded as verified by ${
+                        user?.email || ""
+                      }`}
                 </p>
               </div>
             </div>
@@ -423,7 +524,9 @@ export default function Brands() {
                     <label
                       key={field.key}
                       className={`text-xs text-gray-500 space-y-0.5 ${
-                        field.span === 2 ? "col-span-2" : ""
+                        field.span === 2
+                          ? "col-span-2"
+                          : ""
                       } ${
                         field.type === "checkbox"
                           ? "flex items-center gap-2 text-sm text-gray-700 pt-3.5"
@@ -438,7 +541,8 @@ export default function Brands() {
                             onChange={(e) =>
                               setEditing({
                                 ...editing,
-                                [field.key]: e.target.checked,
+                                [field.key]:
+                                  e.target.checked,
                               })
                             }
                           />
@@ -451,7 +555,10 @@ export default function Brands() {
                             {field.label}
 
                             {field.required && (
-                              <span className="text-primary"> *</span>
+                              <span className="text-primary">
+                                {" "}
+                                *
+                              </span>
                             )}
                           </span>
 
@@ -464,7 +571,8 @@ export default function Brands() {
                               onChange={(e) =>
                                 setEditing({
                                   ...editing,
-                                  [field.key]: e.target.value,
+                                  [field.key]:
+                                    e.target.value,
                                 })
                               }
                             />
@@ -478,7 +586,8 @@ export default function Brands() {
                               onChange={(e) =>
                                 setEditing({
                                   ...editing,
-                                  [field.key]: e.target.value,
+                                  [field.key]:
+                                    e.target.value,
                                 })
                               }
                             />
@@ -496,17 +605,23 @@ export default function Brands() {
 
       {/* Delete Brand Modal */}
       {deleting && (
-        <Modal title="Delete Brand" onClose={() => setDeleting(null)}>
+        <Modal
+          title="Delete Brand"
+          onClose={() => setDeleting(null)}
+        >
           <p className="text-sm text-gray-600">
-            Are you sure you want to delete <strong>{deleting.name}</strong>?
-            This cannot be undone.
+            Are you sure you want to delete{" "}
+            <strong>{deleting.name}</strong>? This cannot be
+            undone.
           </p>
 
           <DeleteModalActions
             formErr={deleteMutation.error?.message}
             isPending={deleteMutation.isPending}
             onCancel={() => setDeleting(null)}
-            onDelete={() => deleteMutation.mutate(deleting._id)}
+            onDelete={() =>
+              deleteMutation.mutate(deleting._id)
+            }
           />
         </Modal>
       )}

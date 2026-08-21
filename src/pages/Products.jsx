@@ -104,7 +104,7 @@ async function importProductsCsv(file, existingProducts) {
       maker: record.maker ?? "",
       country: record.country ?? "",
       region: record.region ?? "",
-      price: Number(record.price) || 0,
+      price: Number(record.price ?? record.originalprice) || 0,
       offerPrice: Number(record.offerprice) || 0,
       membersPrice: Number(record.membersprice) || 0,
       clearancePrice: Number(record.clearanceprice) || 0,
@@ -116,7 +116,7 @@ async function importProductsCsv(file, existingProducts) {
       inStock: record.instock
         ? ["true", "1", "yes"].includes(record.instock.toLowerCase())
         : true,
-      stockQuantity: Number(record.stockquantity) || 0,
+      stockQuantity: Number(record.stockquantity ?? record.stock) || 0,
       volumeMl: Number(record.volumeml) || 0,
       abv: record.abv ?? "",
       vintage: record.vintage ?? "",
