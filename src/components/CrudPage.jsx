@@ -42,6 +42,7 @@ export default function CrudPage({
   searchFields,
   searchPlaceholder = "Search…",
   queryKey,
+  allowCreate = true,
 }) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -111,12 +112,14 @@ export default function CrudPage({
     <div className="p-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-1.5 bg-primary text-white text-sm px-4 py-2 hover:opacity-90"
-        >
-          <Plus size={14} /> Add {entityName}
-        </button>
+        {allowCreate && (
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-1.5 bg-primary text-white text-sm px-4 py-2 hover:opacity-90"
+          >
+            <Plus size={14} /> Add {entityName}
+          </button>
+        )}
       </div>
 
       <div className="mt-4 max-w-sm">

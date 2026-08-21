@@ -3,29 +3,27 @@ import { categoriesStore as store } from "../lib/entityStores";
 
 const fields = [
   { name: "name", label: "Category name", required: true, colSpan: 2 },
-  {
-    name: "group",
-    label: "Group",
-    type: "select",
-    default: "wine",
-    options: [
-      { value: "wine", label: "Wine" },
-      { value: "spirits", label: "Spirits" },
-      { value: "beer", label: "Beer" },
-      { value: "offers", label: "Offers" },
-    ],
-  },
+  { name: "image", label: "Image URL", colSpan: 2 },
+  { name: "isActive", label: "Active", type: "checkbox", default: true },
   { name: "description", label: "Description", type: "textarea", colSpan: 2 },
 ];
 
 const columns = [
   { key: "name", label: "Name" },
-  {
-    key: "group",
-    label: "Group",
-    render: (c) => <span className="capitalize">{c.group}</span>,
-  },
   { key: "description", label: "Description" },
+  {
+    key: "isActive",
+    label: "Status",
+    render: (c) => (
+      <span
+        className={`px-2 py-0.5 text-xs ${
+          c.isActive ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+        }`}
+      >
+        {c.isActive ? "Active" : "Inactive"}
+      </span>
+    ),
+  },
 ];
 
 export default function Catalogue() {
@@ -37,7 +35,7 @@ export default function Catalogue() {
       queryKey="categories"
       columns={columns}
       fields={fields}
-      searchFields={["name", "group"]}
+      searchFields={["name"]}
       searchPlaceholder="Search categories…"
     />
   );

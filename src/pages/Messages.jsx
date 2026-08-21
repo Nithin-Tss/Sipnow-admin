@@ -2,31 +2,28 @@ import CrudPage from "../components/CrudPage";
 import { messagesStore as store } from "../lib/entityStores";
 
 const STATUS_STYLES = {
-  unread: "bg-blue-50 text-blue-700",
-  read: "bg-gray-100 text-gray-600",
-  replied: "bg-green-50 text-green-700",
+  pending: "bg-blue-50 text-blue-700",
+  "in-progress": "bg-yellow-50 text-yellow-700",
+  resolved: "bg-green-50 text-green-700",
 };
 
 const fields = [
-  { name: "fromName", label: "From name", required: true },
-  { name: "fromEmail", label: "From email", type: "email" },
-  { name: "subject", label: "Subject", required: true, colSpan: 2 },
   {
     name: "status",
     label: "Status",
     type: "select",
-    default: "unread",
+    default: "pending",
     options: [
-      { value: "unread", label: "Unread" },
-      { value: "read", label: "Read" },
-      { value: "replied", label: "Replied" },
+      { value: "pending", label: "Pending" },
+      { value: "in-progress", label: "In progress" },
+      { value: "resolved", label: "Resolved" },
     ],
   },
-  { name: "body", label: "Message", type: "textarea", colSpan: 2 },
 ];
 
 const columns = [
   { key: "fromName", label: "From" },
+  { key: "fromEmail", label: "Email" },
   { key: "subject", label: "Subject" },
   { key: "body", label: "Message" },
   {
@@ -53,6 +50,7 @@ export default function Messages() {
       fields={fields}
       searchFields={["fromName", "subject"]}
       searchPlaceholder="Search messages…"
+      allowCreate={false}
     />
   );
 }

@@ -2,39 +2,43 @@ import CrudPage from "../components/CrudPage";
 import { giftCardsStore as store } from "../lib/entityStores";
 
 const fields = [
-  { name: "code", label: "Gift card code", required: true, colSpan: 2 },
+  { name: "amount", label: "Amount", type: "number", required: true },
+  { name: "recipientName", label: "Recipient name", required: true },
   {
-    name: "initialValue",
-    label: "Initial value",
-    type: "number",
+    name: "recipientEmail",
+    label: "Recipient email",
+    type: "email",
     required: true,
+    colSpan: 2,
   },
-  { name: "balance", label: "Current balance", type: "number", required: true },
-  { name: "active", label: "Active", type: "checkbox", default: true },
+  { name: "expiryDate", label: "Expiry date", type: "date" },
+  { name: "isActive", label: "Active", type: "checkbox", default: true },
+  { name: "message", label: "Message", type: "textarea", colSpan: 2 },
 ];
 
 const columns = [
   { key: "code", label: "Code" },
   {
-    key: "initialValue",
-    label: "Initial",
-    render: (g) => `$${Number(g.initialValue).toFixed(2)}`,
+    key: "amount",
+    label: "Amount",
+    render: (g) => `$${Number(g.amount).toFixed(2)}`,
   },
   {
     key: "balance",
     label: "Balance",
     render: (g) => `$${Number(g.balance).toFixed(2)}`,
   },
+  { key: "recipientName", label: "Recipient" },
   {
-    key: "active",
+    key: "isActive",
     label: "Status",
     render: (g) => (
       <span
         className={`px-2 py-0.5 text-xs ${
-          g.active ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+          g.isActive ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
         }`}
       >
-        {g.active ? "Active" : "Inactive"}
+        {g.isActive ? "Active" : "Inactive"}
       </span>
     ),
   },
@@ -49,7 +53,7 @@ export default function GiftCards() {
       queryKey="gift-cards"
       columns={columns}
       fields={fields}
-      searchFields={["code"]}
+      searchFields={["code", "recipientName", "recipientEmail"]}
       searchPlaceholder="Search gift cards…"
     />
   );

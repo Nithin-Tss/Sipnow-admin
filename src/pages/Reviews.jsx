@@ -4,13 +4,10 @@ import { reviewsStore as store } from "../lib/entityStores";
 const STATUS_STYLES = {
   pending: "bg-yellow-50 text-yellow-700",
   approved: "bg-green-50 text-green-700",
-  rejected: "bg-red-50 text-red-700",
+  hidden: "bg-red-50 text-red-700",
 };
 
 const fields = [
-  { name: "productName", label: "Product name", required: true, colSpan: 2 },
-  { name: "customerName", label: "Customer name", required: true },
-  { name: "rating", label: "Rating (1-5)", type: "number" },
   {
     name: "status",
     label: "Status",
@@ -19,10 +16,9 @@ const fields = [
     options: [
       { value: "pending", label: "Pending" },
       { value: "approved", label: "Approved" },
-      { value: "rejected", label: "Rejected" },
+      { value: "hidden", label: "Hidden" },
     ],
   },
-  { name: "comment", label: "Comment", type: "textarea", colSpan: 2 },
 ];
 
 const columns = [
@@ -54,6 +50,7 @@ export default function Reviews() {
       fields={fields}
       searchFields={["productName", "customerName"]}
       searchPlaceholder="Search reviews…"
+      allowCreate={false}
     />
   );
 }

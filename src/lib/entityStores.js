@@ -1,66 +1,100 @@
-import { createMockStore } from "./mockStore";
 import { apiFetch } from "./apiClient";
 
-export const usersStore = createMockStore("sipnow_admin_users", [
-  {
-    _id: "user-seed-1",
-    firstName: "Admin",
-    lastName: "User",
-    email: "admin@sipnow.com",
-    role: "admin",
-    active: true,
+function paginate(
+  items,
+  { search = "", page = 1, perPage = 20, searchFields = ["name"] } = {},
+) {
+  const q = search.trim().toLowerCase();
+
+  const filtered = q
+    ? items.filter((item) =>
+        searchFields.some((field) =>
+          String(item[field] ?? "")
+            .toLowerCase()
+            .includes(q),
+        ),
+      )
+    : items;
+
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / perPage));
+  const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
+  const start = (safePage - 1) * perPage;
+
+  return {
+    items: filtered.slice(start, start + perPage),
+    total,
+    totalPages,
+  };
+}
+
+function unwrap(response, key) {
+  if (Array.isArray(response)) return response;
+  return response?.[key] ?? [];
+}
+
+/* =========================================================
+   USERS
+   Admin can view every registered user, invite new ones,
+   change their role, and remove accounts.
+   ========================================================= */
+
+export const usersStore = {
+  async all() {
+    const response = await apiFetch("/users");
+    return unwrap(response, "users");
   },
-  {
-    _id: "user-seed-2",
-    firstName: "Store",
-    lastName: "Owner",
-    email: "owner@sipnow.com",
-    role: "store_owner",
-    active: true,
+
+  async list({
+    search = "",
+    page = 1,
+    perPage = 20,
+    searchFields = ["name", "email"],
+  } = {}) {
+    const items = await this.all();
+    return paginate(items, { search, page, perPage, searchFields });
   },
-]);
+
+  async create(body) {
+    return apiFetch("/users", {
+      method: "POST",
+      body: JSON.stringify({
+        name: body.name,
+        email: body.email,
+        password: body.password,
+        phone: body.phone,
+        role: body.role,
+      }),
+    });
+  },
+
+  async update(id, body) {
+    return apiFetch(`/users/${id}/role`, {
+      method: "PUT",
+      body: JSON.stringify({ role: body.role }),
+    });
+  },
+
+  async remove(id) {
+    return apiFetch(`/users/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
 
 /* =========================================================
    COUPONS
-   Admin coupon CRUD uses the backend API.
-   Coupons are NOT stored as frontend/mock data.
    ========================================================= */
 
 export const couponsStore = {
-  async list({ search = "", page = 1, perPage = 20 } = {}) {
+  async all() {
     const response = await apiFetch("/coupons");
+    return unwrap(response, "coupons");
+  },
 
-    const coupons = Array.isArray(response)
-      ? response
-      : Array.isArray(response.data)
-        ? response.data
-        : Array.isArray(response.coupons)
-          ? response.coupons
-          : [];
-
-    const searchValue = search.trim().toLowerCase();
-
-    const filtered = searchValue
-      ? coupons.filter((coupon) =>
-          String(coupon.code || "")
-            .toLowerCase()
-            .includes(searchValue),
-        )
-      : coupons;
-
-    const total = filtered.length;
-
-    const totalPages = Math.max(1, Math.ceil(total / perPage));
-
-    const safePage = Math.min(Math.max(Number(page) || 1, 1), totalPages);
-
-    const start = (safePage - 1) * perPage;
-
-    return {
-      items: filtered.slice(start, start + perPage),
-      total,
-      totalPages,
-    };
+  async list({ search = "", page = 1, perPage = 20 } = {}) {
+    const coupons = await this.all();
+    return paginate(coupons, { search, page, perPage, searchFields: ["code"] });
   },
 
   async create(body) {
@@ -92,155 +126,360 @@ export const couponsStore = {
    GIFT CARDS
    ========================================================= */
 
-export const giftCardsStore = createMockStore("sipnow_admin_gift_cards", [
-  {
-    _id: "gc-seed-1",
-    code: "GIFT-25-AB12",
-    initialValue: 25,
-    balance: 25,
-    active: true,
+export const giftCardsStore = {
+  async all() {
+    const response = await apiFetch("/giftcards");
+    return unwrap(response, "giftCards");
   },
-  {
-    _id: "gc-seed-2",
-    code: "GIFT-50-CD34",
-    initialValue: 50,
-    balance: 32.5,
-    active: true,
+
+  async list({ search = "", page = 1, perPage = 20 } = {}) {
+    const giftCards = await this.all();
+    return paginate(giftCards, {
+      search,
+      page,
+      perPage,
+      searchFields: ["code", "recipientName", "recipientEmail"],
+    });
   },
-]);
+
+  async create(body) {
+    return apiFetch("/giftcards", {
+      method: "POST",
+      body: JSON.stringify({
+        amount: body.amount,
+        recipientName: body.recipientName,
+        recipientEmail: body.recipientEmail,
+        message: body.message,
+        expiryDate: body.expiryDate || null,
+      }),
+    });
+  },
+
+  async update(id, body) {
+    return apiFetch(`/giftcards/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        recipientName: body.recipientName,
+        recipientEmail: body.recipientEmail,
+        message: body.message,
+        expiryDate: body.expiryDate || null,
+        isActive: body.isActive,
+      }),
+    });
+  },
+
+  async remove(id) {
+    return apiFetch(`/giftcards/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
 
 /* =========================================================
    STORES
    ========================================================= */
 
-export const storesStore = createMockStore("sipnow_admin_stores", [
-  {
-    _id: "store-seed-1",
-    name: "SipNow Downtown",
-    address: "120 Main St",
-    city: "Austin, TX",
-    phone: "(512) 555-0110",
-    active: true,
+function flattenStore(store) {
+  return {
+    ...store,
+    addressLine1: store.address?.addressLine1 ?? "",
+    addressLine2: store.address?.addressLine2 ?? "",
+    city: store.address?.city ?? "",
+    state: store.address?.state ?? "",
+    postalCode: store.address?.postalCode ?? "",
+    country: store.address?.country ?? "India",
+  };
+}
+
+function storeBody(body) {
+  return {
+    name: body.name,
+    address: {
+      addressLine1: body.addressLine1,
+      addressLine2: body.addressLine2,
+      city: body.city,
+      state: body.state,
+      postalCode: body.postalCode,
+      country: body.country || "India",
+    },
+    phone: body.phone,
+    email: body.email,
+    deliveryRadiusKm: body.deliveryRadiusKm,
+    isActive: body.isActive,
+  };
+}
+
+export const storesStore = {
+  async all() {
+    const response = await apiFetch("/stores?all=true");
+    return unwrap(response, "stores").map(flattenStore);
   },
-  {
-    _id: "store-seed-2",
-    name: "SipNow Riverside",
-    address: "48 River Rd",
-    city: "Austin, TX",
-    phone: "(512) 555-0182",
-    active: true,
+
+  async list({ search = "", page = 1, perPage = 20 } = {}) {
+    const stores = await this.all();
+    return paginate(stores, {
+      search,
+      page,
+      perPage,
+      searchFields: ["name", "city"],
+    });
   },
-]);
+
+  async create(body) {
+    return apiFetch("/stores", {
+      method: "POST",
+      body: JSON.stringify(storeBody(body)),
+    });
+  },
+
+  async update(id, body) {
+    return apiFetch(`/stores/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(storeBody(body)),
+    });
+  },
+
+  async remove(id) {
+    return apiFetch(`/stores/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
 
 /* =========================================================
    SUPPLIERS
    ========================================================= */
 
-export const suppliersStore = createMockStore("sipnow_admin_suppliers", [
-  {
-    _id: "supplier-seed-1",
-    name: "Lone Star Distributors",
-    contactEmail: "orders@lonestardist.com",
-    phone: "(512) 555-0100",
-    region: "Texas",
+export const suppliersStore = {
+  async all() {
+    const response = await apiFetch("/suppliers");
+    return unwrap(response, "suppliers");
   },
-  {
-    _id: "supplier-seed-2",
-    name: "Gulf Coast Beverage Co.",
-    contactEmail: "sales@gulfcoastbev.com",
-    phone: "(713) 555-0142",
-    region: "Gulf Coast",
+
+  async list({ search = "", page = 1, perPage = 20 } = {}) {
+    const suppliers = await this.all();
+    return paginate(suppliers, {
+      search,
+      page,
+      perPage,
+      searchFields: ["name", "region"],
+    });
   },
-]);
+
+  async create(body) {
+    return apiFetch("/suppliers", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+  },
+
+  async update(id, body) {
+    return apiFetch(`/suppliers/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(body),
+    });
+  },
+
+  async remove(id) {
+    return apiFetch(`/suppliers/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
 
 /* =========================================================
    CATEGORIES
    ========================================================= */
 
-export const categoriesStore = createMockStore("sipnow_admin_categories", [
-  {
-    _id: "cat-seed-1",
-    name: "Red Wine",
-    group: "wine",
-    description: "Full and light-bodied red wines.",
+export const categoriesStore = {
+  async all() {
+    const response = await apiFetch("/categories?all=true");
+    return unwrap(response, "categories");
   },
-  {
-    _id: "cat-seed-2",
-    name: "Vodka",
-    group: "spirits",
-    description: "Plain and flavored vodkas.",
+
+  async list({ search = "", page = 1, perPage = 20 } = {}) {
+    const categories = await this.all();
+    return paginate(categories, {
+      search,
+      page,
+      perPage,
+      searchFields: ["name"],
+    });
   },
-  {
-    _id: "cat-seed-3",
-    name: "Craft Beer",
-    group: "beer",
-    description: "Local and imported craft beers.",
+
+  async create(body) {
+    return apiFetch("/categories", {
+      method: "POST",
+      body: JSON.stringify({
+        name: body.name,
+        description: body.description,
+        image: body.image,
+        isActive: body.isActive,
+      }),
+    });
   },
-]);
+
+  async update(id, body) {
+    return apiFetch(`/categories/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        name: body.name,
+        description: body.description,
+        image: body.image,
+        isActive: body.isActive,
+      }),
+    });
+  },
+
+  async remove(id) {
+    return apiFetch(`/categories/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
 
 /* =========================================================
    PROMOTIONS
    ========================================================= */
 
-export const promotionsStore = createMockStore("sipnow_admin_promotions", [
-  {
-    _id: "promo-seed-1",
-    title: "Summer Wine Sale",
-    discountPercent: 15,
-    startDate: "2026-06-01",
-    endDate: "2026-08-31",
-    active: true,
+export const promotionsStore = {
+  async all() {
+    const response = await apiFetch("/promotions");
+    return unwrap(response, "promotions");
   },
-  {
-    _id: "promo-seed-2",
-    title: "Holiday Spirits Special",
-    discountPercent: 20,
-    startDate: "2026-12-01",
-    endDate: "2026-12-31",
-    active: false,
+
+  async list({ search = "", page = 1, perPage = 20 } = {}) {
+    const promotions = await this.all();
+    return paginate(promotions, {
+      search,
+      page,
+      perPage,
+      searchFields: ["title"],
+    });
   },
-]);
+
+  async create(body) {
+    return apiFetch("/promotions", {
+      method: "POST",
+      body: JSON.stringify({
+        title: body.title,
+        description: body.description,
+        discountType: body.discountType,
+        discountValue: body.discountValue,
+        startDate: body.startDate || null,
+        endDate: body.endDate || null,
+        isActive: body.isActive,
+      }),
+    });
+  },
+
+  async update(id, body) {
+    return apiFetch(`/promotions/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        title: body.title,
+        description: body.description,
+        discountType: body.discountType,
+        discountValue: body.discountValue,
+        startDate: body.startDate || null,
+        endDate: body.endDate || null,
+        isActive: body.isActive,
+      }),
+    });
+  },
+
+  async remove(id) {
+    return apiFetch(`/promotions/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
 
 /* =========================================================
    OFFERS
    ========================================================= */
 
-export const offersStore = createMockStore("sipnow_admin_offers", [
-  {
-    _id: "offer-seed-1",
-    title: "Buy 2 Get 1 Free — Craft Beer",
-    badgeText: "BOGO",
-    description: "Limited-time bundle offer on selected craft beers.",
-    active: true,
+export const offersStore = {
+  async all() {
+    const response = await apiFetch("/offers");
+    return unwrap(response, "offers");
   },
-  {
-    _id: "offer-seed-2",
-    title: "Free Shipping Over $75",
-    badgeText: "FREE SHIP",
-    description: "Applies automatically at checkout.",
-    active: true,
+
+  async list({ search = "", page = 1, perPage = 20 } = {}) {
+    const offers = await this.all();
+    return paginate(offers, {
+      search,
+      page,
+      perPage,
+      searchFields: ["title", "code"],
+    });
   },
-]);
+
+  async create(body) {
+    return apiFetch("/offers", {
+      method: "POST",
+      body: JSON.stringify({
+        title: body.title,
+        description: body.description,
+        code: body.code,
+        discountType: body.discountType,
+        discountValue: body.discountValue,
+        minimumPurchase: body.minimumPurchase,
+        maximumDiscount: body.maximumDiscount,
+        startDate: body.startDate || null,
+        endDate: body.endDate || null,
+        isActive: body.isActive,
+      }),
+    });
+  },
+
+  async update(id, body) {
+    return apiFetch(`/offers/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        title: body.title,
+        description: body.description,
+        code: body.code,
+        discountType: body.discountType,
+        discountValue: body.discountValue,
+        minimumPurchase: body.minimumPurchase,
+        maximumDiscount: body.maximumDiscount,
+        startDate: body.startDate || null,
+        endDate: body.endDate || null,
+        isActive: body.isActive,
+      }),
+    });
+  },
+
+  async remove(id) {
+    return apiFetch(`/offers/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
 
 /* =========================================================
    ORDERS
    ========================================================= */
 
+function mapOrder(order) {
+  return {
+    ...order,
+    customerName: order.user?.name || order.user?.email || "Customer",
+    total: order.totalAmount,
+    placedAt: order.createdAt,
+    fulfilment: order.fulfilment || "delivery",
+  };
+}
+
 export const ordersStore = {
-  async list({ search = "", page = 1, perPage = 20 } = {}) {
+  async all() {
     const response = await apiFetch("/orders");
+    return (response.orders || []).map(mapOrder);
+  },
 
-    const orders = (response.orders || []).map((order) => ({
-      ...order,
-
-      customerName: order.user?.name || order.user?.email || "Customer",
-
-      total: order.totalAmount,
-
-      placedAt: order.createdAt,
-
-      fulfilment: order.fulfilment || "delivery",
-    }));
+  async list({ search = "", page = 1, perPage = 20 } = {}) {
+    const orders = await this.all();
 
     const term = search.trim().toLowerCase();
 
@@ -256,9 +495,7 @@ export const ordersStore = {
 
     return {
       items: filtered.slice(start, start + perPage),
-
       total: filtered.length,
-
       totalPages: Math.max(1, Math.ceil(filtered.length / perPage)),
     };
   },
@@ -266,10 +503,7 @@ export const ordersStore = {
   async update(id, body) {
     const response = await apiFetch(`/orders/${id}/status`, {
       method: "PATCH",
-
-      body: JSON.stringify({
-        status: body.status,
-      }),
+      body: JSON.stringify({ status: body.status }),
     });
 
     return response.order;
@@ -284,46 +518,94 @@ export const ordersStore = {
 
 /* =========================================================
    REVIEWS
+   Admin can see reviews in every moderation status and
+   approve/hide them. Reviews are authored by customers,
+   so admins cannot fabricate new ones from this panel.
    ========================================================= */
 
-export const reviewsStore = createMockStore("sipnow_admin_reviews", [
-  {
-    _id: "review-seed-1",
-    productName: "Château Margaux 2015",
-    customerName: "Jane Cooper",
-    rating: 5,
-    comment: "Absolutely wonderful, smooth and rich.",
-    status: "approved",
+const REVIEW_STATUSES = ["pending", "approved", "hidden"];
+
+export const reviewsStore = {
+  async all() {
+    const results = await Promise.all(
+      REVIEW_STATUSES.map((status) =>
+        apiFetch(`/reviews?status=${status}`).then((response) =>
+          unwrap(response, "reviews"),
+        ),
+      ),
+    );
+
+    return results
+      .flat()
+      .map((review) => ({
+        ...review,
+        productName: review.product?.name || "Unknown product",
+        customerName: review.user?.name || "Anonymous",
+      }))
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   },
-  {
-    _id: "review-seed-2",
-    productName: "Grey Goose Vodka",
-    customerName: "Wade Warren",
-    rating: 4,
-    comment: "Great quality, fast delivery.",
-    status: "pending",
+
+  async list({ search = "", page = 1, perPage = 20 } = {}) {
+    const reviews = await this.all();
+    return paginate(reviews, {
+      search,
+      page,
+      perPage,
+      searchFields: ["productName", "customerName"],
+    });
   },
-]);
+
+  async update(id, body) {
+    return apiFetch(`/reviews/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: body.status }),
+    });
+  },
+
+  async remove(id) {
+    return apiFetch(`/reviews/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
 
 /* =========================================================
    MESSAGES
+   Contact messages are submitted by customers via the
+   storefront; admins can only triage (status + delete).
    ========================================================= */
 
-export const messagesStore = createMockStore("sipnow_admin_messages", [
-  {
-    _id: "msg-seed-1",
-    fromName: "Jane Cooper",
-    fromEmail: "jane@example.com",
-    subject: "Question about delivery times",
-    body: "Hi, when can I expect my order to arrive?",
-    status: "unread",
+export const messagesStore = {
+  async all() {
+    const response = await apiFetch("/contact");
+    return unwrap(response, "messages").map((message) => ({
+      ...message,
+      fromName: message.name,
+      fromEmail: message.email,
+      body: message.message,
+    }));
   },
-  {
-    _id: "msg-seed-2",
-    fromName: "Wade Warren",
-    fromEmail: "wade@example.com",
-    subject: "Damaged bottle in order",
-    body: "One of the bottles arrived cracked, can I get a replacement?",
-    status: "read",
+
+  async list({ search = "", page = 1, perPage = 20 } = {}) {
+    const messages = await this.all();
+    return paginate(messages, {
+      search,
+      page,
+      perPage,
+      searchFields: ["fromName", "subject"],
+    });
   },
-]);
+
+  async update(id, body) {
+    return apiFetch(`/contact/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: body.status }),
+    });
+  },
+
+  async remove(id) {
+    return apiFetch(`/contact/${id}`, {
+      method: "DELETE",
+    });
+  },
+};

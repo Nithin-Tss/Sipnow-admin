@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchAllProducts } from "../lib/mockProducts";
+import { fetchAllProducts } from "../lib/productsApi";
 import { inputCls } from "../lib/ui";
 
 const ROWS = [

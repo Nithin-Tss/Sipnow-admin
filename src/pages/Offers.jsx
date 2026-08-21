@@ -3,24 +3,57 @@ import { offersStore as store } from "../lib/entityStores";
 
 const fields = [
   { name: "title", label: "Offer title", required: true, colSpan: 2 },
-  { name: "badgeText", label: "Badge text" },
-  { name: "active", label: "Active", type: "checkbox", default: true },
+  { name: "code", label: "Offer code" },
+  {
+    name: "discountType",
+    label: "Discount type",
+    type: "select",
+    default: "percentage",
+    options: [
+      { value: "percentage", label: "Percentage" },
+      { value: "fixed", label: "Fixed amount" },
+    ],
+  },
+  {
+    name: "discountValue",
+    label: "Discount value",
+    type: "number",
+    required: true,
+  },
+  {
+    name: "minimumPurchase",
+    label: "Minimum purchase",
+    type: "number",
+    default: 0,
+  },
+  { name: "maximumDiscount", label: "Maximum discount", type: "number" },
+  { name: "startDate", label: "Start date", type: "date" },
+  { name: "endDate", label: "End date", type: "date" },
+  { name: "isActive", label: "Active", type: "checkbox", default: true },
   { name: "description", label: "Description", type: "textarea", colSpan: 2 },
 ];
 
 const columns = [
   { key: "title", label: "Title" },
-  { key: "badgeText", label: "Badge" },
+  { key: "code", label: "Code" },
   {
-    key: "active",
+    key: "discount",
+    label: "Discount",
+    render: (o) =>
+      o.discountType === "percentage"
+        ? `${o.discountValue}%`
+        : `$${Number(o.discountValue || 0).toFixed(2)}`,
+  },
+  {
+    key: "isActive",
     label: "Status",
     render: (o) => (
       <span
         className={`px-2 py-0.5 text-xs ${
-          o.active ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+          o.isActive ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
         }`}
       >
-        {o.active ? "Active" : "Inactive"}
+        {o.isActive ? "Active" : "Inactive"}
       </span>
     ),
   },
@@ -35,7 +68,7 @@ export default function Offers() {
       queryKey="offers"
       columns={columns}
       fields={fields}
-      searchFields={["title", "badgeText"]}
+      searchFields={["title", "code"]}
       searchPlaceholder="Search offers…"
     />
   );

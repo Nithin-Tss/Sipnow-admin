@@ -7,7 +7,7 @@ import {
   Star,
   Ticket,
 } from "lucide-react";
-import { fetchAllProducts } from "../lib/mockProducts";
+import { fetchAllProducts } from "../lib/productsApi";
 import {
   ordersStore,
   usersStore,
@@ -83,7 +83,7 @@ export default function Dashboard() {
     <div className="p-6">
       <h2 className="text-xl font-semibold text-gray-900">Dashboard</h2>
       <p className="mt-1 text-sm text-gray-500">
-        Live overview backed by local mock data.
+        Live overview backed by the database.
       </p>
 
       <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-4">

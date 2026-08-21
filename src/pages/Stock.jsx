@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Download, Upload } from "lucide-react";
-import { fetchAllProducts, updateProduct } from "../lib/mockProducts";
+import { fetchAllProducts, updateProduct } from "../lib/productsApi";
 import { parseCsvRecords, toCsv, downloadCsv } from "../lib/csv";
 import SearchInput from "../components/SearchInput";
 import TableStateRow from "../components/TableStateRow";
