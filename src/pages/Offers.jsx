@@ -1,7 +1,10 @@
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import CrudPage from "../components/CrudPage";
 import { offersStore as store } from "../lib/entityStores";
+import { fetchAllProducts } from "../lib/productsApi";
 
-const fields = [
+const baseFields = [
   { name: "title", label: "Offer title", required: true, colSpan: 2 },
   { name: "code", label: "Offer code" },
   {
@@ -20,7 +23,7 @@ const fields = [
     required: true,
     type: "number",
   },
-  { name: "minimumPurchase", label: "Minimum purchase", type: "number" },
+  { name: "minimumPurchase", label: "Minimum purchase", type: "number", default: 0   },
   { name: "maximumDiscount", label: "Maximum discount", type: "number" },
   { name: "startDate", label: "Start date", type: "date" },
   { name: "endDate", label: "End date", type: "date" },
@@ -55,6 +58,36 @@ const columns = [
 ];
 
 export default function Offers() {
+  const { data: allProducts = [] } = useQuery({
+    queryKey: ["allProductsForOffers"],
+    queryFn: fetchAllProducts,
+  });
+
+  /*
+   * Product options are loaded live so the saved ids are real Product ids.
+   * Only verified products are offered — unverified ones aren't shown on the
+   * storefront catalog, so promoting them would never actually display.
+   */
+  const fields = useMemo(
+    () => [
+      ...baseFields,
+      {
+        name: "applicableProducts",
+        label: "Products in this promotion",
+        type: "multiselect",
+        options: allProducts
+          .filter((product) => product.verified === true)
+          .map((product) => ({
+            value: product._id,
+            label: `${product.name}${product.sku ? ` (${product.sku})` : ""} - $${Number(
+              product.price,
+            ).toFixed(2)}`,
+          })),
+      },
+    ],
+    [allProducts],
+  );
+
   return (
     <CrudPage
       title="General Promotions"

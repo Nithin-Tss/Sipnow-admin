@@ -16,9 +16,20 @@ function emptyFormFrom(fields) {
   for (const field of fields) {
     if (field.type === "section") continue;
     form[field.name] =
-      field.default ?? (field.type === "checkbox" ? false : "");
+      field.default ??
+      (field.type === "checkbox"
+        ? false
+        : field.type === "multiselect"
+          ? []
+          : "");
   }
   return form;
+}
+
+/** Relation fields arrive populated from the API; the form only tracks their ids. */
+function toIdList(value) {
+  if (!Array.isArray(value)) return [];
+  return value.map((entry) => entry?._id ?? entry).filter(Boolean);
 }
 
 function formToBody(editing, fields) {
@@ -28,6 +39,7 @@ function formToBody(editing, fields) {
     const value = editing[field.name];
     if (field.type === "number") body[field.name] = Number(value) || 0;
     else if (field.type === "checkbox") body[field.name] = Boolean(value);
+    else if (field.type === "multiselect") body[field.name] = toIdList(value);
     else body[field.name] = typeof value === "string" ? value.trim() : value;
   }
   return body;
@@ -97,7 +109,11 @@ export default function CrudPage({
       if (field.type === "section") continue;
       const value = item[field.name];
       form[field.name] =
-        field.type === "checkbox" ? Boolean(value) : (value ?? "");
+        field.type === "checkbox"
+          ? Boolean(value)
+          : field.type === "multiselect"
+            ? toIdList(value)
+            : (value ?? "");
     }
     setEditing(form);
   }
@@ -238,6 +254,48 @@ export default function CrudPage({
                         </option>
                       ))}
                     </select>
+                  );
+                }
+                if (field.type === "multiselect") {
+                  const selected = editing[field.name] ?? [];
+                  return (
+                    <div key={field.name} className="col-span-2">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        {field.label}
+                      </label>
+                      <div className="max-h-44 overflow-y-auto rounded-lg border border-gray-300 divide-y divide-gray-100">
+                        {(field.options ?? []).length === 0 && (
+                          <p className="px-3 py-2 text-xs text-gray-400">
+                            No options available.
+                          </p>
+                        )}
+                        {(field.options ?? []).map((opt) => (
+                          <label
+                            key={opt.value}
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selected.includes(opt.value)}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  [field.name]: e.target.checked
+                                    ? [...selected, opt.value]
+                                    : selected.filter(
+                                        (id) => id !== opt.value,
+                                      ),
+                                })
+                              }
+                            />
+                            <span className="truncate">{opt.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <p className="mt-1 text-[11px] text-gray-400">
+                        {selected.length} selected
+                      </p>
+                    </div>
                   );
                 }
                 if (field.type === "checkbox") {
